@@ -1,4 +1,5 @@
 from flask import Flask
+from flask import flash
 from flask import redirect
 from flask import request
 from flask import render_template
@@ -38,6 +39,7 @@ def createMenuItem(restaurant_id):
         newMenuItem = MenuItem(restaurant_id=restaurant_id,  name=request.form['name'])
         session.add(newMenuItem)
         session.commit()
+        flash("new menu item created")
         return redirect(url_for('restaurantMenu', restaurant_id=restaurant_id))
     else:
         restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
@@ -72,5 +74,6 @@ def deleteMenuItem(restaurant_id, menuItem_id):
 
 
 if __name__ == '__main__':
+    app.secret_key = 'asdf1234'
     app.debug = True
     app.run(host = '0.0.0.0', port=PORT)
