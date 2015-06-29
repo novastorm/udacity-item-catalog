@@ -31,7 +31,7 @@
                 <p>{{ menuItem.description }}</p>
             </div>
             <div class="editdeletepane">
-                <a href="{{ url_for('editMenuItem', restaurant_id=restaurant.id, menuItem_id=menuItem.id) }}">Edit</a>
+                <a href="{{ url_for('updateMenuItem', restaurant_id=restaurant.id, menuItem_id=menuItem.id) }}">Edit</a>
                 <a href="{{ url_for('deleteMenuItem', restaurant_id=restaurant.id, menuItem_id=menuItem.id) }}">Delete</a>
             </div>
         </div>
