@@ -3,7 +3,7 @@
 <body>
 <h1>{{ restaurant.name }}</h1>
 <h2>Edit menu item </h2>
-<form action="{{ url_for('updateMenuItem', restaurant_id=restaurant.id, menuItem_id=menuItem.id) }}" method="POST">
+<form action="{{ url_for('editMenuItem', restaurant_id=restaurant.id, menuItem_id=menuItem.id) }}" method="POST">
     <label for='name'>Name:</label>
     <input type='text' size='30' name='input-menuItem-name' value='{{ menuItem.name }}'>
     <input type='submit' value='Update'> <a href="{{ url_for('restaurantMenu', restaurant_id=restaurant.id) }}">Cancel</a>
