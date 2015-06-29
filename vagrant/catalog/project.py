@@ -1,5 +1,6 @@
 from flask import Flask
 from flask import flash
+from flask import jsonify
 from flask import redirect
 from flask import request
 from flask import render_template
@@ -32,6 +33,20 @@ def restaurantMenu(restaurant_id):
     return render_template('restaurant_menus.html', restaurant=restaurant, menuItems=menuItems)
 
 
+@app.route('/restaurants/<int:restaurant_id>/menu/JSON')
+def restaurantMenuJSON(restaurant_id):
+    restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
+    menuItems = session.query(MenuItem).filter_by(restaurant_id=restaurant.id)
+    return jsonify(MenuItems=[menuItem.serialize for menuItem in menuItems])
+
+
+@app.route('/restaurants/<int:restaurant_id>/menu/<int:menuItem_id>/JSON')
+def restaurantMenuItemJSON(restaurant_id, menuItem_id):
+    restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
+    menuItem = session.query(MenuItem).filter_by(restaurant_id=restaurant.id, id=menuItem_id).one()
+    return jsonify(MenuItems=menuItem.serialize)
+
+
 # Task 1: Create route for newMenuItem function here
 @app.route('/restaurants/<int:restaurant_id>/menu_items/create', methods=['GET', 'POST'])
 def createMenuItem(restaurant_id):
@@ -52,6 +67,9 @@ def editMenuItem(restaurant_id, menuItem_id):
     menuItem = session.query(MenuItem).filter_by(id=menuItem_id).one()
     if request.method == 'POST':
         menuItem.name=request.form['input-menuItem-name']
+        menuItem.price=request.form['input-menuItem-price']
+        menuItem.description=request.form['input-menuItem-description']
+        menuItem.course=request.form['input-menuItem-course']
         session.add(menuItem)
         session.commit()
         flash("menu item edited")

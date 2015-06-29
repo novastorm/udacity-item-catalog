@@ -1,26 +1,41 @@
 <!DOCTYPE html>
 <html>
+<head>
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
+</head>
 <body>
-    <h1>{{ restaurant.name }}</h1>
+    <div class="pane">
+        <div class="header">
+            <h1>{{ restaurant.name }}</h1>
+        </div>
+        <a href="{{ url_for('createMenuItem', restaurant_id=restaurant.id) }}">Create new menu item</a>
+        <div class="flash">
 {% with messages = get_flashed_messages() %}
     {% if messages %}
-        <ul>
+            <ul>
         {% for message in messages %}
-            <li><strong>{{ message }} </strong></li>
+                <li><strong>{{ message }} </strong></li>
         {% endfor %}
-        </ul>
+            </ul>
     {% endif %}
 {% endwith %}
-    <a href="{{ url_for('createMenuItem', restaurant_id=restaurant.id) }}">Create new menu item</a><br />
-    <br />
+        </div>
 
-    {% for menuItem in menuItems %}
-        {{ menuItem.name }}<br />
-        {{ menuItem.description }}<br />
-        {{ menuItem.price }}<br />
-        <a href="{{ url_for('editMenuItem', restaurant_id=restaurant.id, menuItem_id=menuItem.id) }}">Edit</a><br />
-        <a href="{{ url_for('deleteMenuItem', restaurant_id=restaurant.id, menuItem_id=menuItem.id) }}">Delete</a><br />
-        <br />
-    {% endfor %}
+{% for menuItem in menuItems %}
+        <div class="menu-item">
+            <div class="nameAndPrice">
+                <span class="name"><p>{{ menuItem.name }}</p></span>
+                <span class="price"><p>{{ menuItem.price }}</p></span>
+            </div>
+            <div class="description">
+                <p>{{ menuItem.description }}</p>
+            </div>
+            <div class="editdeletepane">
+                <a href="{{ url_for('editMenuItem', restaurant_id=restaurant.id, menuItem_id=menuItem.id) }}">Edit</a>
+                <a href="{{ url_for('deleteMenuItem', restaurant_id=restaurant.id, menuItem_id=menuItem.id) }}">Delete</a>
+            </div>
+        </div>
+{% endfor %}
+    </div>
 </body>
 </html>
