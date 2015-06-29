@@ -2,10 +2,15 @@
 <html>
 <body>
     <h1>{{ restaurant.name }}</h1>
-    {% for i in items %}
-        {{ i.name }}<br />
-        {{ i.description }}<br />
-        {{ i.price }}<br />
+    <a href="{{ url_for('createMenuItem', restaurant_id=restaurant.id) }}">Create new menu item</a><br />
+    <br />
+
+    {% for menuItem in menuItems %}
+        {{ menuItem.name }}<br />
+        {{ menuItem.description }}<br />
+        {{ menuItem.price }}<br />
+        <a href="{{ url_for('editMenuItem', restaurant_id=restaurant.id, menuItem_id=menuItem.id) }}">Edit</a><br />
+        <a href="{{ url_for('deleteMenuItem', restaurant_id=restaurant.id, menuItem_id=menuItem.id) }}">Delete</a><br />
         <br />
     {% endfor %}
 </body>
