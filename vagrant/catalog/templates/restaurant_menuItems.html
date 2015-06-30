@@ -4,15 +4,15 @@
 </head>
 <body>
     <h1><a href="{{ url_for('listRestaurants') }}">&lt;</a> {{ restaurant.name }}</h1>
-    <a href="#">Create new menu item</a>
+    <a href="{{ url_for('createMenuItem', restaurant_id=restaurant.id) }}">Create new menu item</a>
 {% if menuItems %}
     {% for menuItem in menuItems %}
     <div class="menu-item">
         <p>{{ menuItem.name }}</p>
         <p>{{ menuItem.price }}</p>
         <p>{{ menuItem.description }}</p>
-        <a href="#">Edit</a>
-        <a href="#">Delete</a>
+        <a href="{{ url_for('updateMenuItem', restaurant_id=restaurant.id, menuItem_id=menuItem.id) }}">Edit</a>
+        <a href="{{ url_for('deleteMenuItem', restaurant_id=restaurant.id, menuItem_id=menuItem.id) }}">Delete</a>
     </div>
     {% endfor %}
 {% else %}
