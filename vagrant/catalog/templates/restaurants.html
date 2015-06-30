@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="pane">
+        <div class="header">
+            <h1>Restaurants</h1>
+        </div>
+        <a href="#">Create restaurant</a>
+{% if restaurants %}
+    {% for restaurant in restaurants %}
+        <span class="name"><p>{{ restaurant.name }}</p></span>
+        <a href="#">Edit</a>
+        <a href="#">Delete</a>
+    {% endfor %}
+{% else %}
+        <p>Add some restaurants</p>
+{% endif %}
+    </div>
+</body>
+</html>

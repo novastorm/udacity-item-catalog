@@ -11,6 +11,8 @@ from database_setup import Base
 from database_setup import Restaurant
 from database_setup import MenuItem
 
+from stubDatabase import restaurants, restaurant, items, item
+
 PORT = 5000
 app = Flask(__name__)
 engine = create_engine('sqlite:///restaurantmenu.db')
@@ -19,45 +21,46 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
+
 @app.route('/')
 @app.route('/restaurants')
 def listRestaurants():
-    return "restaurant list"
+    return render_template('restaurants.html', restaurants=restaurants)
 
 
 @app.route('/restaurants/create', methods=['GET', 'POST'])
 def createRestaurant():
-    return "create restaurant"
+    return render_template('restaurant_create.html')
 
 
 @app.route('/restaurants/<int:restaurant_id>/update', methods=['GET', 'POST'])
 def updateRestaurant(restaurant_id):
-    return "update restaurant %s" % restaurant_id
+    return render_template('restaurant_update.html', restaurant=restaurant)
 
 
 @app.route('/restaurants/<int:restaurant_id>/delete', methods=['GET', 'POST'])
 def deleteRestaurant(restaurant_id):
-    return "delete restaurant %s" % restaurant_id
+    return render_template('restaurant_delete.html', restaurant=restaurant)
 
 
 @app.route('/restaurants/<int:restaurant_id>/menu_items')
 def restaurantMenu(restaurant_id):
-    return "restaurant %s menu_item list" % restaurant_id
+    return render_template('restaurant_menuItems.html', restaurant=restaurant, menuItems=items)
 
 
 @app.route('/restaurants/<int:restaurant_id>/menu_items/create', methods=['GET', 'POST'])
 def createMenuItem(restaurant_id):
-    return "create restaurant %s menu_item" % restaurant_id
+    return render_template('restaurant_menuItem_create.html', restaurant=restaurant)
 
 
 @app.route('/restaurants/<int:restaurant_id>/menu_items/<int:menuItem_id>/update', methods=['GET', 'POST'])
 def updateMenuItem(restaurant_id, menuItem_id):
-    return "update restaurant %s menu_item %s" % (restaurant_id, menuItem_id)
+    return render_template('restaurant_menuItem_update.html', restaurant=restaurant, menuItem=item)
 
 
 @app.route('/restaurants/<int:restaurant_id>/menu_items/<int:menuItem_id>/delete', methods=['GET', 'POST'])
 def deleteMenuItem(restaurant_id, menuItem_id):
-    return "delete restaurant %s menu_item %s" % (restaurant_id, menuItem_id)
+    return render_template('restaurant_menuItem_delete.html', restaurant=restaurant, menuItem=item)
 
 
 if __name__ == '__main__':

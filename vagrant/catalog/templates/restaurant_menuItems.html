@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+    <h1>{{ restaurant.name }}</h1>
+    <a href="#">Create new menu item</a>
+{% if menuItems %}
+    {% for menuItem in menuItems %}
+    <div class="menu-item">
+        <p>{{ menuItem.name }}</p>
+        <p>{{ menuItem.price }}</p>
+        <p>{{ menuItem.description }}</p>
+        <a href="#">Edit</a>
+        <a href="#">Delete</a>
+    </div>
+    {% endfor %}
+{% else %}
+    <p>Add some menu items</p>
+{% endif %}
+</body>
+</html>
