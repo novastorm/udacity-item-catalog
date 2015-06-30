@@ -43,7 +43,10 @@ def createRestaurant():
 def updateRestaurant(restaurant_id):
     restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
     if request.method == 'POST':
-        pass
+        restaurant.name = request.form['input-name']
+        session.add(restaurant)
+        session.commit()
+        return redirect(url_for('listRestaurants'))
     else:
         return render_template('restaurant_update.html', restaurant=restaurant)
 
