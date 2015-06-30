@@ -12,8 +12,8 @@
 {% if restaurants %}
     {% for restaurant in restaurants %}
         <span class="name"><p>{{ restaurant.name }}</p></span>
-        <a href="#">Edit</a>
-        <a href="#">Delete</a>
+        <a href="{{ url_for('updateRestaurant', restaurant_id=restaurant.id) }}">Edit</a>
+        <a href="{{ url_for('deleteRestaurant', restaurant_id=restaurant.id) }}">Delete</a>
     {% endfor %}
 {% else %}
         <p>Add some restaurants</p>
