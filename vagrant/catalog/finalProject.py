@@ -99,7 +99,14 @@ def updateMenuItem(restaurant_id, menuItem_id):
 
 @app.route('/restaurants/<int:restaurant_id>/menu_items/<int:menuItem_id>/delete', methods=['GET', 'POST'])
 def deleteMenuItem(restaurant_id, menuItem_id):
-    return render_template('restaurant_menuItem_delete.html', restaurant=restaurant, menuItem=menuItem)
+    restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
+    menuItem = session.query(MenuItem).filter_by(restaurant_id=restaurant.id, id=menuItem_id).one()
+    if request.method == 'POST':
+        session.delete(menuItem)
+        session.commit()
+        return redirect(url_for('listMenuItems', restaurant_id=restaurant.id))
+    else:
+        return render_template('restaurant_menuItem_delete.html', restaurant=restaurant, menuItem=menuItem)
 
 
 if __name__ == '__main__':
