@@ -8,7 +8,7 @@
         <div class="header">
             <h1>Restaurants</h1>
         </div>
-        <a href="#">Create restaurant</a>
+        <a href="{{ url_for('createRestaurant') }}">Create restaurant</a>
 {% if restaurants %}
     {% for restaurant in restaurants %}
         <span class="name"><p>{{ restaurant.name }}</p></span>

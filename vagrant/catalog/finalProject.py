@@ -24,12 +24,16 @@ session = DBSession()
 @app.route('/')
 @app.route('/restaurants')
 def listRestaurants():
+    restaurants = session.query(Restaurant).all()
     return render_template('restaurants.html', restaurants=restaurants)
 
 
 @app.route('/restaurants/create', methods=['GET', 'POST'])
 def createRestaurant():
-    return render_template('restaurant_create.html')
+    if request.method == 'POST':
+        pass
+    else:
+        return render_template('restaurant_create.html')
 
 
 @app.route('/restaurants/<int:restaurant_id>/update', methods=['GET', 'POST'])
