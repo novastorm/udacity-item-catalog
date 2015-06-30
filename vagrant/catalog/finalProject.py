@@ -41,7 +41,11 @@ def createRestaurant():
 
 @app.route('/restaurants/<int:restaurant_id>/update', methods=['GET', 'POST'])
 def updateRestaurant(restaurant_id):
-    return render_template('restaurant_update.html', restaurant=restaurant)
+    restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
+    if request.method == 'POST':
+        pass
+    else:
+        return render_template('restaurant_update.html', restaurant=restaurant)
 
 
 @app.route('/restaurants/<int:restaurant_id>/delete', methods=['GET', 'POST'])
