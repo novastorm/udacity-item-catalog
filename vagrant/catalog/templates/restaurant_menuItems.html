@@ -3,7 +3,7 @@
 <head>
 </head>
 <body>
-    <h1>{{ restaurant.name }}</h1>
+    <h1><a href="{{ url_for('listRestaurants') }}">&lt;</a> {{ restaurant.name }}</h1>
     <a href="#">Create new menu item</a>
 {% if menuItems %}
     {% for menuItem in menuItems %}
