@@ -71,7 +71,14 @@ def listMenuItems(restaurant_id):
 
 @app.route('/restaurants/<int:restaurant_id>/menu_items/create', methods=['GET', 'POST'])
 def createMenuItem(restaurant_id):
-    return render_template('restaurant_menuItem_create.html', restaurant=restaurant)
+    restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
+    if request.method == 'POST':
+        menuItem = MenuItem(restaurant_id=restaurant.id, name=request.form['input-name'])
+        session.add(menuItem)
+        session.commit()
+        return redirect(url_for('listMenuItems', restaurant_id=restaurant.id))
+    else:
+        return render_template('restaurant_menuItem_create.html', restaurant=restaurant)
 
 
 @app.route('/restaurants/<int:restaurant_id>/menu_items/<int:menuItem_id>/update', methods=['GET', 'POST'])
