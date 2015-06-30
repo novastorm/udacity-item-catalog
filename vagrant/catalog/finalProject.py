@@ -11,7 +11,6 @@ from database_setup import Base
 from database_setup import Restaurant
 from database_setup import MenuItem
 
-from stubDatabase import restaurants, restaurant, items, item
 
 PORT = 5000
 app = Flask(__name__)
