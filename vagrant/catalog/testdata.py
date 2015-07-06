@@ -19,6 +19,62 @@ DBSession = sessionmaker(bind=engine)
 # session.rollback()
 session = DBSession()
 
+courses = [
+    {
+        'id': '1',
+        'label': 'Programming Concepts Introduction'
+    },
+    {
+        'id': '2',
+        'label': 'Perl Programming'
+    },
+    {
+        'id': '3',
+        'label': 'Advanced Perl Programming'
+    }
+]
+course = {
+    'id': '1',
+    'label': 'Programming Concepts Introduction'
+}
+
+skills = [
+    {
+        'id': '1',
+        'label': 'Console Output',
+        'level': '1',
+        'rank': '1',
+        'category': 'input/output',
+        'description': 'Output text to the console',
+    },
+    {
+        'id': '2',
+        'label': 'Variables',
+        'level': '2',
+        'rank': '1',
+        'category': 'datatypes',
+        'description': 'A datatype to hold a value',
+    },
+    {
+        'id': '3',
+        'label': 'Assignment operator',
+        'level': '2',
+        'rank': '1',
+        'category': 'operators',
+        'description': 'An operator used to assign values to variables.',
+    },
+]
+
+skill = {
+    'id': '1',
+    'label': 'Console Output',
+    'level': '1',
+    'rank': '1',
+    'category': 'input/output',
+    'description': 'Output text to the console',
+}
+
+
 
 # Menu for UrbanBurger
 # restaurant1 = Restaurant(name="Urban Burger")
