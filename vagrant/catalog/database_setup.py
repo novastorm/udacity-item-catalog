@@ -33,7 +33,7 @@ class Course(Base):
         }
 
 class Skill(Base):
-    __tablename__ = '%s%s' % (TablePrefix,'Skill')
+    __tablename__ = '%s%s' % (TablePrefix, 'Skill')
 
     id = Column(Integer, primary_key=True)
     label = Column(String(127), nullable=False)
@@ -62,6 +62,12 @@ class Skill(Base):
             'description': self.description,
                 'example': self.example,
         }
+
+class Exercise(Base):
+    __tablename__ = '%s%s' % (TablePrefix, 'Exercise')
+
+    id = Column(Integer, primary_key=True)
+    label = Column(String(127), nullable=False)
 
 # declare and create database engine
 engine = create_engine(DatabaseEngine)
