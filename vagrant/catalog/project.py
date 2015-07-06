@@ -83,7 +83,17 @@ def deleteCourse(course_id):
         return render_template('courseDelete.html', course=course)
 
 
-@app.route('courses/')
+@app.route('/course/JSON')
+def listCoursesJSON():
+    courses = session.query(Course).all()
+    return jsonify(courses=[course.serialize for course in courses])
+
+
+@app.route('/course/<int:course_id>/JSON')
+def showCourseJSON(course_id):
+    course = session.query(Course).filter_by(id=course_id).one()
+    return jsonify(course=course.serialize)
+
 
 @app.route('/course/<int:course_id>/skill')
 def listCourseSkills(course_id):
