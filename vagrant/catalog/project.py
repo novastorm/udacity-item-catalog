@@ -20,8 +20,6 @@ import json
 import requests
 import string
 
-from testdata import courses, course
-
 
 APPLICATION_NAME = "Academy Concepts"
 
@@ -30,39 +28,55 @@ engine = create_engine(DatabaseEngineURL)
 Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
-DBH = DBSession()
+session = DBSession()
 
 
 @app.route('/')
 @app.route('/courses')
 def listCourses():
+    courses = session.query(Course).order_by(asc(Course.label))
     return render_template('courseList.html', courses=courses)
 
 
 @app.route('/courses/create', methods=['GET','POST'])
 def createCourse():
     if request.method == 'POST':
-        return redirect(url_for('updateCourse', course_id=course['id']))
+        course = Course(
+            label=request.form['input-label']
+            )
+        session.add(course)
+        session.commit()
+        session.refresh(course)
+        return redirect(url_for('updateCourse', course_id=course.id))
     else:
-        return render_template('courseCreate.html', course=course)
+        return render_template('courseCreate.html')
 
 
 @app.route('/courses/<int:course_id>')
 def showCourse(course_id):
+    course = session.query(Course).filter_by(id=course_id).one()
     return render_template('courseDetail.html', course=course)
 
 
 @app.route('/courses/<int:course_id>/update', methods=['GET','POST'])
 def updateCourse(course_id):
+    course = session.query(Course).filter_by(id=course_id).one()
     if request.method == 'POST':
-        return redirect(url_for('showCourse', course_id=course['id']))
+        course.label = request.form['input-label']
+        course.description = request.form['input-description']
+        session.add(course)
+        session.commit()
+        return redirect(url_for('showCourse', course_id=course.id))
     else:
         return render_template('courseUpdate.html', course=course)
 
 
 @app.route('/courses/<int:course_id>/delete', methods=['GET','POST'])
 def deleteCourse(course_id):
+    course = session.query(Course).filter_by(id=course_id).one()
     if request.method == 'POST':
+        session.delete(course)
+        session.commit()
         return redirect(url_for('listCourses'))
     else:
         return render_template('courseDelete.html', course=course)
