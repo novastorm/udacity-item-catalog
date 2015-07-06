@@ -1,0 +1,8 @@
+{% extends "main.html" %}
+{% block content %}
+<h1>Delete {{ course.label }}?</h1>
+<form method="POST" action="{{ url_for('deleteCourse', course_id=course['id']) }}">
+    <button type="submit">Delete</button>
+    <a href="{{ url_for('showCourse', course_id=course['id']) }}"><div class="btn">Cancel</div></a>
+</form>
+{% endblock %}

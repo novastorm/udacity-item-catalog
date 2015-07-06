@@ -22,20 +22,24 @@ session = DBSession()
 courses = [
     {
         'id': '1',
-        'label': 'Programming Concepts Introduction'
+        'label': 'Programming Concepts Introduction',
+        'description': 'Introduction to programming concepts using the Perl programming language'
     },
     {
         'id': '2',
-        'label': 'Perl Programming'
+        'label': 'Perl Programming',
+        'description': 'Perl programming '
     },
     {
         'id': '3',
-        'label': 'Advanced Perl Programming'
+        'label': 'Advanced Perl Programming',
+        'description': 'Advanced Perl programming'
     }
 ]
 course = {
     'id': '1',
-    'label': 'Programming Concepts Introduction'
+    'label': 'Programming Concepts Introduction',
+    'description': 'Introduction to programming concepts using the Perl programming language'
 }
 
 skills = [

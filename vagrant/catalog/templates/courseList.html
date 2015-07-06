@@ -1,0 +1,12 @@
+{% extends "main.html" %}
+{% block content %}
+<h1>Courses</h1>
+    <a href="{{ url_for('createCourse') }}">Create Course</a>
+    {% for course in courses %}
+    <a href="{{ url_for('showCourse', course_id=course.id) }}">
+        <div>
+            <h3>{{ course.label }}</h3>
+        </div>
+    </a>
+    {% endfor %}
+{% endblock %}

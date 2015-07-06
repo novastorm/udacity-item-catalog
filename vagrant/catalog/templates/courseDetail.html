@@ -1,0 +1,6 @@
+{% extends "main.html" %}
+{% block content %}
+<h1>{{ course.label }}</h1>
+<a href="{{ url_for('updateCourse', course_id=course.id) }}">Edit</a>
+<a href="{{ url_for('deleteCourse', course_id=course.id) }}">Delete</a>
+{% endblock %}
