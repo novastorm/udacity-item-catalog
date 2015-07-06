@@ -1,11 +1,17 @@
+import httplib2
+import json
+import requests
+import string
+
 from database_setup import Base
 from database_setup import Course
-from database_setup import Skill
-from database_setup import Exercise
 from database_setup import DatabaseEngineURL
+from database_setup import Exercise
+from database_setup import Skill
 
 from flask import Flask
 from flask import flash
+from flask import jsonify
 from flask import make_response
 from flask import redirect
 from flask import render_template
@@ -14,11 +20,6 @@ from flask import url_for
 
 from sqlalchemy import create_engine, asc
 from sqlalchemy.orm import sessionmaker
-
-import httplib2
-import json
-import requests
-import string
 
 
 APPLICATION_NAME = "Academy Concepts"
@@ -32,13 +33,13 @@ session = DBSession()
 
 
 @app.route('/')
-@app.route('/courses')
+@app.route('/course')
 def listCourses():
     courses = session.query(Course).order_by(asc(Course.label))
     return render_template('courseList.html', courses=courses)
 
 
-@app.route('/courses/create', methods=['GET','POST'])
+@app.route('/course/create', methods=['GET','POST'])
 def createCourse():
     if request.method == 'POST':
         course = Course(
@@ -52,13 +53,13 @@ def createCourse():
         return render_template('courseCreate.html')
 
 
-@app.route('/courses/<int:course_id>')
+@app.route('/course/<int:course_id>')
 def showCourse(course_id):
     course = session.query(Course).filter_by(id=course_id).one()
     return render_template('courseDetail.html', course=course)
 
 
-@app.route('/courses/<int:course_id>/update', methods=['GET','POST'])
+@app.route('/course/<int:course_id>/update', methods=['GET','POST'])
 def updateCourse(course_id):
     course = session.query(Course).filter_by(id=course_id).one()
     if request.method == 'POST':
@@ -71,7 +72,7 @@ def updateCourse(course_id):
         return render_template('courseUpdate.html', course=course)
 
 
-@app.route('/courses/<int:course_id>/delete', methods=['GET','POST'])
+@app.route('/course/<int:course_id>/delete', methods=['GET','POST'])
 def deleteCourse(course_id):
     course = session.query(Course).filter_by(id=course_id).one()
     if request.method == 'POST':
@@ -82,52 +83,54 @@ def deleteCourse(course_id):
         return render_template('courseDelete.html', course=course)
 
 
-@app.route('/courses/<int:course_id>/skills')
+@app.route('courses/')
+
+@app.route('/course/<int:course_id>/skill')
 def listCourseSkills(course_id):
     return  "list course %s skills" % course_id
 
 
-@app.route('/courses/<int:course_id>/skills/create', methods=['GET','POST'])
+@app.route('/course/<int:course_id>/skills/create', methods=['GET','POST'])
 def createCourseSkill(course_id):
     return  "create course %s skill" % course_id
 
 
-@app.route('/courses/<int:course_id>/skills/<int:skill_id>')
+@app.route('/course/<int:course_id>/skill/<int:skill_id>')
 def showCourseSkill(course_id, skill_id):
     return  "show course %s skill %s" % (course_id, skill_id)
 
 
-@app.route('/courses/<int:course_id>/skills/<int:skill_id>/update', methods=['GET','POST'])
+@app.route('/course/<int:course_id>/skill/<int:skill_id>/update', methods=['GET','POST'])
 def updateCourseSkill(course_id, skill_id):
     return  "update course %s skill %s" % (course_id, skill_id)
 
 
-@app.route('/courses/<int:course_id>/skills/<int:skill_id>/delete', methods=['GET','POST'])
+@app.route('/course/<int:course_id>/skill/<int:skill_id>/delete', methods=['GET','POST'])
 def deleteCourseSkill(course_id, skill_id):
     return  "delete course %s skill %s" % (course_id, skill_id)
 
 
-@app.route('/courses/<int:course_id>/exercises')
+@app.route('/course/<int:course_id>/exercise')
 def listCourseExercises(course_id):
     return  "list course %s exercises" % course_id
 
 
-@app.route('/courses/<int:course_id>/exercises/create', methods=['GET','POST'])
+@app.route('/course/<int:course_id>/exercise/create', methods=['GET','POST'])
 def createCourseExercise(course_id):
     return  "create course %s exercise" % course_id
 
 
-@app.route('/courses/<int:course_id>/exercises/<int:exercise_id>')
+@app.route('/course/<int:course_id>/exercise/<int:exercise_id>')
 def showCourseExercise(course_id, exercise_id):
     return  "show course %s exercise %s" % (course_id, exercise_id)
 
 
-@app.route('/courses/<int:course_id>/exercises/<int:exercise_id>/update', methods=['GET','POST'])
+@app.route('/course/<int:course_id>/exercise/<int:exercise_id>/update', methods=['GET','POST'])
 def updateCourseExercise(course_id, exercise_id):
     return  "update course %s exercise %s" % (course_id, exercise_id)
 
 
-@app.route('/courses/<int:course_id>/exercises/<int:exercise_id>/delete', methods=['GET','POST'])
+@app.route('/course/<int:course_id>/exercise/<int:exercise_id>/delete', methods=['GET','POST'])
 def deleteCourseExercise(course_id, exercise_id):
     return  "delete course %s exercise %s" % (course_id, exercise_id)
 
