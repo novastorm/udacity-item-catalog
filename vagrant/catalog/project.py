@@ -19,6 +19,8 @@ import json
 import requests
 import string
 
+from testdata import courses, course
+
 
 APPLICATION_NAME = "Academy Concepts"
 
@@ -33,7 +35,7 @@ DBH = DBSession()
 @app.route('/')
 @app.route('/courses')
 def listCourses():
-    return  "list courses"
+    return render_template('courses.html', courses=courses)
 
 
 @app.route('/courses/create')

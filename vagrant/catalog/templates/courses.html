@@ -1,0 +1,7 @@
+{% extends "main.html" %}
+{% block content %}
+<h1>Courses</h1>
+    {% for course in courses %}
+        <h3>{{ course.label }}</h3>
+    {% endfor %}
+{% endblock %}
