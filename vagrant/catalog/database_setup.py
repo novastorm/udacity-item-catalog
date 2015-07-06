@@ -12,7 +12,7 @@ from sqlalchemy.orm import relationship
 
 TablePrefix = 'ACT_'
 # DatabaseEngine = 'sqlite:///restaurantmenu.db'
-DatabaseEngine = 'postgresql:///vagrant'
+DatabaseEngineURL = 'postgresql:///vagrant'
 
 Base = declarative_base()
 
@@ -70,5 +70,5 @@ class Exercise(Base):
     label = Column(String(127), nullable=False)
 
 # declare and create database engine
-engine = create_engine(DatabaseEngine)
+engine = create_engine(DatabaseEngineURL)
 Base.metadata.create_all(engine)
