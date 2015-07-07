@@ -1,0 +1,8 @@
+<a href="{{ url_for('listCourses') }}">
+    <span class="glyphicon glyphicon-home" aria-hidden="true"></span> Show All Courses
+</a>
+{% if course %}
+<a href="{{ url_for('showCourse', course_id=course.id) }}">
+    <span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span> {{ course.label }}
+</a>
+{% endif %}
