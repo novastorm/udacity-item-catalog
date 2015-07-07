@@ -1,16 +1,27 @@
 {% extends "main.html" %}
 {% block content %}
-<h1>Edit {{ course.label }}</h1>
+<h1>{{ skill.label }} <small>Edit Skill</small></h1>
+<div class="flash">
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul>
+        {% for message in messages %}
+        <li><strong>{{ message }}</strong></li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+{% endwith %}
+</div>
 <form method="POST" action="{{ url_for('updateCourseSkill', course_id=course.id, skill_id=skill.id) }}">
     <div>
         <label for="input-label">Label:</label>
-        <input name="input-label" type="text" value="{{ skill.label }}" />
+        <input name="input-label" type="text" value="{{ skillUpdates.label if skillUpdates else skill.label }}" />
     </div>
     <div>
         <label for="input-description">Description:</label>
-        <textarea name="input-description">{{ skill.description }}</textarea>
+        <textarea name="input-description">{{ skillUpdates.description if skillUpdates else skill.description }}</textarea>
     </div>
     <button type="submit">Update</button>
-    <a href="{{ url_for('showCourseSkill', course_id=course.id, skill_id=skill,id) }}"><div class="btn">Cancel</div></a>
+    <a href="{{ url_for('showCourseSkill', course_id=course.id, skill_id=skill.id) }}"><div class="btn">Cancel</div></a>
 </form>
 {% endblock %}

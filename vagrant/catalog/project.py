@@ -165,21 +165,35 @@ def showCourseSkill(course_id, skill_id):
 
 @app.route('/course/<int:course_id>/skill/<int:skill_id>/update', methods=['GET','POST'])
 def updateCourseSkill(course_id, skill_id):
-    return  "update course %s skill %s" % (course_id, skill_id)
-    course = session.query(Course).filter_by(id=course_id).one()
-    skill = session.query(Skill).filter_by(id=skill_id).one()
+    try:
+        course = session.query(Course).filter_by(id=course_id).one()
+    except:
+        return redirect(url_for('listCourses')), 404
+
+    try:
+        skill = session.query(Skill).filter_by(id=skill_id).one()
+    except:
+        return redirect(url_for('listCourseSkills', course_id=course.id)), 404
+
     if request.method == 'POST':
-        skill.label = request.form['input-label']
-        skill.description = request.form['input-description']
-        session.add(skill)
+        skillUpdates = Skill(
+            label = request.form['input-label'],
+            description = request.form['input-description']
+            )
         try:
-            session.commit()
-            return redirect(url_for('showCourseSkill', course_id=course.id, skill_id=skill_id))
+            print "check for existing"
+            existingSkill = session.query(Skill).filter(Skill.course_id==course_id, Skill.label==request.form['input-label'], Skill.id!=skill_id).one()
+            flash('Course skill label exists')
+            return render_template('updateCourseSkill.html', course=course, skill=skill, skillUpdates=skillUpdates)
         except:
-            session.rollback()
-            return render_template('updateCourse.html', course=course, skill=skill)
+            print "does not exist"
+            skill.label = skillUpdates.label
+            skill.description = skillUpdates.description
+            session.add(skill)
+            session.commit()
+            return redirect(url_for('showCourseSkill', course_id=course.id, skill_id=skill.id))
     else:
-        return render_template('updateCourse.html', course=course, skill=skill)
+        return render_template('updateCourseSkill.html', course=course, skill=skill)
 
 
 @app.route('/course/<int:course_id>/skill/<int:skill_id>/delete', methods=['GET','POST'])
