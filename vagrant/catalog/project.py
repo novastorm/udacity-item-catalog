@@ -82,7 +82,7 @@ def updateCourse(course_id):
         course.description = request.form['input-description']
         try:
             existingCourse = session.query(Course).filter_by(label=course.label).one()
-            flash('Course skill label exists')
+            flash('Course label exists')
             return render_template('updateCourse.html', course=course)
         except:
             session.add(course)
