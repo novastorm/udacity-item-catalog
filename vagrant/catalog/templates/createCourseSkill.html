@@ -1,0 +1,15 @@
+
+{% extends "main.html" %}
+{% block content %}
+<h1>{{ course.label }} Create Skill</h1>
+<form action="{{ url_for('createCourseSkill') }}" method="POST">
+    <div class="form-group">
+    <label for="name">Label:</label>
+    <input name="input-label" type="text" class="form-control" maxlength="100">
+    <div class="padding-bottom"></div>
+    <button type="submit" class="btn btn-default" id="submit" type="submit">
+    <span class="glyphicon glyphicon-cutlery" aria-hidden="true"></span>Create</button>
+    <a href="{{ url_for('listCourseSkills', course_id=course.id) }}"><div class="btn">Cancel</div></a>
+    </div>
+</form>
+{% endblock %}

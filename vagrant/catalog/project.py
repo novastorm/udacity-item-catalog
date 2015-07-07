@@ -36,7 +36,7 @@ session = DBSession()
 @app.route('/course')
 def listCourses():
     courses = session.query(Course).order_by(asc(Course.label))
-    return render_template('courseList.html', courses=courses)
+    return render_template('listCourses.html', courses=courses)
 
 
 @app.route('/course/create', methods=['GET','POST'])
@@ -50,13 +50,13 @@ def createCourse():
         session.refresh(course)
         return redirect(url_for('updateCourse', course_id=course.id))
     else:
-        return render_template('courseCreate.html')
+        return render_template('createCourse.html')
 
 
 @app.route('/course/<int:course_id>')
 def showCourse(course_id):
     course = session.query(Course).filter_by(id=course_id).one()
-    return render_template('courseDetail.html', course=course)
+    return render_template('showCourse.html', course=course)
 
 
 @app.route('/course/<int:course_id>/update', methods=['GET','POST'])
@@ -69,7 +69,7 @@ def updateCourse(course_id):
         session.commit()
         return redirect(url_for('showCourse', course_id=course.id))
     else:
-        return render_template('courseUpdate.html', course=course)
+        return render_template('updateCourse.html', course=course)
 
 
 @app.route('/course/<int:course_id>/delete', methods=['GET','POST'])
@@ -80,7 +80,7 @@ def deleteCourse(course_id):
         session.commit()
         return redirect(url_for('listCourses'))
     else:
-        return render_template('courseDelete.html', course=course)
+        return render_template('deleteCourse.html', course=course)
 
 
 @app.route('/course/JSON')
@@ -97,12 +97,26 @@ def showCourseJSON(course_id):
 
 @app.route('/course/<int:course_id>/skill')
 def listCourseSkills(course_id):
-    return  "list course %s skills" % course_id
+    course = session.query(Course).filter_by(id=course_id).one()
+    skills = session.query(Skill).filter_by(id=course_id).order_by(asc(Skill.label)).all()
+    return render_template('listCourseSkills.html', course=course, skills=skills)
 
 
 @app.route('/course/<int:course_id>/skills/create', methods=['GET','POST'])
 def createCourseSkill(course_id):
+    course = session.query(Course).filter_by(id=course_id).one()
     return  "create course %s skill" % course_id
+    if request.method == 'POST':
+        skill = Skill(
+            course_id=course.id,
+            label=request.form['input-label']
+            )
+        session.add(skill)
+        session.commit()
+        session.refresh(skill)
+        return redirect(url_for('updateCourseSkill', skill_id=skill.id))
+    else:
+        return render_template('createCourseSkill.html')
 
 
 @app.route('/course/<int:course_id>/skill/<int:skill_id>')
