@@ -6,6 +6,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
 from sqlalchemy import String
 from sqlalchemy import Text
+from sqlalchemy import Index
 from sqlalchemy import UniqueConstraint
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
@@ -47,7 +48,7 @@ class Skill(Base):
     course_id = Column(Integer, ForeignKey(Course.id), nullable=False)
     course = relationship(Course)
 
-    UniqueConstraint('id', 'label')
+    __table_args__ = (UniqueConstraint('course_id', 'label'), None)
 
     @property
     def serialize(self):

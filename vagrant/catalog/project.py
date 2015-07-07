@@ -46,9 +46,14 @@ def createCourse():
             label=request.form['input-label']
             )
         session.add(course)
-        session.commit()
-        session.refresh(course)
-        return redirect(url_for('updateCourse', course_id=course.id))
+        try:
+            session.commit()
+            session.refresh(course)
+            return redirect(url_for('updateCourse', course_id=course.id))
+        except:
+            session.rollback()
+            flash('Course label exists')
+            return render_template('createCourse.html', course=course)
     else:
         return render_template('createCourse.html')
 
@@ -102,10 +107,10 @@ def listCourseSkills(course_id):
     return render_template('listCourseSkills.html', course=course, skills=skills)
 
 
-@app.route('/course/<int:course_id>/skills/create', methods=['GET','POST'])
+@app.route('/course/<int:course_id>/skill/create', methods=['GET','POST'])
 def createCourseSkill(course_id):
     course = session.query(Course).filter_by(id=course_id).one()
-    return  "create course %s skill" % course_id
+    # return  "create course %s skill" % course_id
     if request.method == 'POST':
         skill = Skill(
             course_id=course.id,
@@ -114,9 +119,9 @@ def createCourseSkill(course_id):
         session.add(skill)
         session.commit()
         session.refresh(skill)
-        return redirect(url_for('updateCourseSkill', skill_id=skill.id))
+        return redirect(url_for('updateCourseSkill', course_id=course.id, skill_id=skill.id))
     else:
-        return render_template('createCourseSkill.html')
+        return render_template('createCourseSkill.html', course=course)
 
 
 @app.route('/course/<int:course_id>/skill/<int:skill_id>')

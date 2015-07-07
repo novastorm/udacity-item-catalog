@@ -2,7 +2,7 @@
 {% extends "main.html" %}
 {% block content %}
 <h1>{{ course.label }} Create Skill</h1>
-<form action="{{ url_for('createCourseSkill') }}" method="POST">
+<form action="{{ url_for('createCourseSkill', course_id=course.id) }}" method="POST">
     <div class="form-group">
     <label for="name">Label:</label>
     <input name="input-label" type="text" class="form-control" maxlength="100">

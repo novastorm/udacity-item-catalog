@@ -1,0 +1,16 @@
+{% extends "main.html" %}
+{% block content %}
+<h1>Edit {{ course.label }}</h1>
+<form method="POST" action="{{ url_for('updateCourseSkill', course_id=course.id, skill_id=skill.id) }}">
+    <div>
+        <label for="input-label">Label:</label>
+        <input name="input-label" type="text" value="{{ skill.label }}" />
+    </div>
+    <div>
+        <label for="input-description">Description:</label>
+        <textarea name="input-description">{{ skill.description }}</textarea>
+    </div>
+    <button type="submit">Update</button>
+    <a href="{{ url_for('showCourseSkill', course_id=course.id, skill_id=skill,id) }}"><div class="btn">Cancel</div></a>
+</form>
+{% endblock %}
