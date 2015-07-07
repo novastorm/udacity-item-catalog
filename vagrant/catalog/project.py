@@ -78,13 +78,18 @@ def updateCourse(course_id):
         return redirect(url_for('listCourses')), 404
 
     if request.method == 'POST':
-        course.label = request.form['input-label']
-        course.description = request.form['input-description']
+        updates = Course(
+            label = request.form['input-label'],
+            description = request.form['input-description']
+            )
+
         try:
-            existingCourse = session.query(Course).filter_by(label=course.label).one()
+            existingCourse = session.query(Course).filter(Course.label==updates.label, Course.id!=course_id).one()
             flash('Course label exists')
-            return render_template('updateCourse.html', course=course)
+            return render_template('updateCourse.html', course=course, courseUpdates=updates)
         except:
+            course.label = updates.label
+            course.description = updates.description
             session.add(course)
             session.commit()
             return redirect(url_for('showCourse', course_id=course.id))
@@ -176,19 +181,19 @@ def updateCourseSkill(course_id, skill_id):
         return redirect(url_for('listCourseSkills', course_id=course.id)), 404
 
     if request.method == 'POST':
-        skillUpdates = Skill(
+        updates = Skill(
             label = request.form['input-label'],
             description = request.form['input-description']
             )
         try:
             print "check for existing"
-            existingSkill = session.query(Skill).filter(Skill.course_id==course_id, Skill.label==request.form['input-label'], Skill.id!=skill_id).one()
+            existingSkill = session.query(Skill).filter(Skill.course_id==course_id, Skill.label==updates.label, Skill.id!=skill.id).one()
             flash('Course skill label exists')
-            return render_template('updateCourseSkill.html', course=course, skill=skill, skillUpdates=skillUpdates)
+            return render_template('updateCourseSkill.html', course=course, skill=skill, skillUpdates=updates)
         except:
             print "does not exist"
-            skill.label = skillUpdates.label
-            skill.description = skillUpdates.description
+            skill.label = updates.label
+            skill.description = updates.description
             session.add(skill)
             session.commit()
             return redirect(url_for('showCourseSkill', course_id=course.id, skill_id=skill.id))

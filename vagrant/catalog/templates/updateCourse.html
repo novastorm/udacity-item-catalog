@@ -15,11 +15,11 @@
 <form method="POST" action="{{ url_for('updateCourse', course_id=course.id) }}">
     <div>
         <label for="input-label">Label:</label>
-        <input name="input-label" type="text" value="{{ course.label }}" />
+        <input name="input-label" type="text" value="{{ courseUpdates.label if courseUpdates else course.label }}" />
     </div>
     <div>
         <label for="input-description">Description:</label>
-        <textarea name="input-description">{{ course.description }}</textarea>
+        <textarea name="input-description">{{ courseUpdates.description if courseUpdates else course.description }}</textarea>
     </div>
     <button type="submit">Update</button>
     <a href="{{ url_for('showCourse', course_id=course.id) }}"><div class="btn">Cancel</div></a>
