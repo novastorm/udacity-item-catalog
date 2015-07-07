@@ -1,0 +1,10 @@
+{% extends "main.html" %}
+{% block content %}
+<span>
+    <h1>{{ skill.label }}
+    </h1>
+</span>
+<p>{{ course.description }}</p>
+<a href="{{ url_for('updateCourseSkill', course_id=course.id, skill_id=skill.id) }}">Edit</a>
+<a href="{{ url_for('deleteCourseSkill', course_id=course.id, skill_id=skill.id) }}">Delete</a>
+{% endblock %}

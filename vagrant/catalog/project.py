@@ -103,7 +103,7 @@ def showCourseJSON(course_id):
 @app.route('/course/<int:course_id>/skill')
 def listCourseSkills(course_id):
     course = session.query(Course).filter_by(id=course_id).one()
-    skills = session.query(Skill).filter_by(id=course_id).order_by(asc(Skill.label)).all()
+    skills = session.query(Skill).filter_by(course_id=course.id).order_by(asc(Skill.label)).all()
     return render_template('listCourseSkills.html', course=course, skills=skills)
 
 
@@ -117,16 +117,24 @@ def createCourseSkill(course_id):
             label=request.form['input-label']
             )
         session.add(skill)
-        session.commit()
-        session.refresh(skill)
-        return redirect(url_for('updateCourseSkill', course_id=course.id, skill_id=skill.id))
+        try:
+            session.commit()
+            session.refresh(skill)
+            return redirect(url_for('updateCourseSkill', course_id=course.id, skill_id=skill.id))
+        except:
+            session.rollback()
+            flash('Course skill label exists')
+            return render_template('createCourseSkill.html', course=course, skill=skill)
+
     else:
         return render_template('createCourseSkill.html', course=course)
 
 
 @app.route('/course/<int:course_id>/skill/<int:skill_id>')
 def showCourseSkill(course_id, skill_id):
-    return  "show course %s skill %s" % (course_id, skill_id)
+    course = session.query(Course).filter_by(id=course_id).one()
+    skill = session.query(Skill).filter_by(id=skill_id).one()
+    return render_template('showCourseSkill.html', course=course, skill=skill)
 
 
 @app.route('/course/<int:course_id>/skill/<int:skill_id>/update', methods=['GET','POST'])
