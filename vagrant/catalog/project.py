@@ -10,6 +10,7 @@ from database_setup import Exercise
 from database_setup import Skill
 
 from flask import Flask
+from flask import abort
 from flask import flash
 from flask import jsonify
 from flask import make_response
@@ -48,38 +49,56 @@ def createCourse():
         session.add(course)
         try:
             session.commit()
-            session.refresh(course)
-            return redirect(url_for('updateCourse', course_id=course.id))
         except:
             session.rollback()
             flash('Course label exists')
             return render_template('createCourse.html', course=course)
+
+        session.refresh(course)
+        return redirect(url_for('updateCourse', course_id=course.id))
     else:
         return render_template('createCourse.html')
 
 
 @app.route('/course/<int:course_id>')
 def showCourse(course_id):
-    course = session.query(Course).filter_by(id=course_id).one()
+    try:
+        course = session.query(Course).filter_by(id=course_id).one()
+    except:
+        return redirect(url_for('listCourses')), 404
+
     return render_template('showCourse.html', course=course)
 
 
 @app.route('/course/<int:course_id>/update', methods=['GET','POST'])
 def updateCourse(course_id):
-    course = session.query(Course).filter_by(id=course_id).one()
+    try:
+        course = session.query(Course).filter_by(id=course_id).one()
+    except:
+        return redirect(url_for('listCourses')), 404
+
     if request.method == 'POST':
         course.label = request.form['input-label']
         course.description = request.form['input-description']
-        session.add(course)
-        session.commit()
-        return redirect(url_for('showCourse', course_id=course.id))
+        try:
+            existingCourse = session.query(Course).filter_by(label=course.label).one()
+            flash('Course skill label exists')
+            return render_template('updateCourse.html', course=course)
+        except:
+            session.add(course)
+            session.commit()
+            return redirect(url_for('showCourse', course_id=course.id))
     else:
         return render_template('updateCourse.html', course=course)
 
 
 @app.route('/course/<int:course_id>/delete', methods=['GET','POST'])
 def deleteCourse(course_id):
-    course = session.query(Course).filter_by(id=course_id).one()
+    try:
+        course = session.query(Course).filter_by(id=course_id).one()
+    except:
+        return abort(404)
+
     if request.method == 'POST':
         session.delete(course)
         session.commit()
@@ -96,13 +115,21 @@ def listCoursesJSON():
 
 @app.route('/course/<int:course_id>/JSON')
 def showCourseJSON(course_id):
-    course = session.query(Course).filter_by(id=course_id).one()
+    try:
+        course = session.query(Course).filter_by(id=course_id).one()
+    except:
+        return abort(404)
+
     return jsonify(course=course.serialize)
 
 
 @app.route('/course/<int:course_id>/skill')
 def listCourseSkills(course_id):
-    course = session.query(Course).filter_by(id=course_id).one()
+    try:
+        course = session.query(Course).filter_by(id=course_id).one()
+    except:
+        return redirect(url_for('listCourses'))
+
     skills = session.query(Skill).filter_by(course_id=course.id).order_by(asc(Skill.label)).all()
     return render_template('listCourseSkills.html', course=course, skills=skills)
 
@@ -110,7 +137,6 @@ def listCourseSkills(course_id):
 @app.route('/course/<int:course_id>/skill/create', methods=['GET','POST'])
 def createCourseSkill(course_id):
     course = session.query(Course).filter_by(id=course_id).one()
-    # return  "create course %s skill" % course_id
     if request.method == 'POST':
         skill = Skill(
             course_id=course.id,
@@ -119,13 +145,13 @@ def createCourseSkill(course_id):
         session.add(skill)
         try:
             session.commit()
-            session.refresh(skill)
-            return redirect(url_for('updateCourseSkill', course_id=course.id, skill_id=skill.id))
         except:
             session.rollback()
             flash('Course skill label exists')
             return render_template('createCourseSkill.html', course=course, skill=skill)
 
+        session.refresh(skill)
+        return redirect(url_for('updateCourseSkill', course_id=course.id, skill_id=skill.id))
     else:
         return render_template('createCourseSkill.html', course=course)
 
@@ -140,6 +166,20 @@ def showCourseSkill(course_id, skill_id):
 @app.route('/course/<int:course_id>/skill/<int:skill_id>/update', methods=['GET','POST'])
 def updateCourseSkill(course_id, skill_id):
     return  "update course %s skill %s" % (course_id, skill_id)
+    course = session.query(Course).filter_by(id=course_id).one()
+    skill = session.query(Skill).filter_by(id=skill_id).one()
+    if request.method == 'POST':
+        skill.label = request.form['input-label']
+        skill.description = request.form['input-description']
+        session.add(skill)
+        try:
+            session.commit()
+            return redirect(url_for('showCourseSkill', course_id=course.id, skill_id=skill_id))
+        except:
+            session.rollback()
+            return render_template('updateCourse.html', course=course, skill=skill)
+    else:
+        return render_template('updateCourse.html', course=course, skill=skill)
 
 
 @app.route('/course/<int:course_id>/skill/<int:skill_id>/delete', methods=['GET','POST'])
