@@ -1,7 +1,6 @@
 {% extends "main.html" %}
 {% block content %}
-<h3>{{ course.label }}</h3>
-<h1>Delete {{ skill.label }}?</h1>
+<h1>Delete skill {{ skill.label }}?</h1>
 <form method="POST" action="{{ url_for('deleteCourseSkill', course_id=course.id, skill_id=skill.id) }}">
     <button type="submit">Delete</button>
     <a href="{{ url_for('showCourseSkill', course_id=course.id, skill_id=skill.id) }}"><div class="btn">Cancel</div></a>
