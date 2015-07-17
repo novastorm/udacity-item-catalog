@@ -307,7 +307,22 @@ def updateCourseExercise(course_id, exercise_id):
 
 @app.route('/course/<int:course_id>/exercise/<int:exercise_id>/delete', methods=['GET','POST'])
 def deleteCourseExercise(course_id, exercise_id):
-    return  "delete course %s exercise %s" % (course_id, exercise_id)
+    try:
+        course = session.query(Course).filter_by(id=course_id).one()
+    except:
+        return redirect(url_for('listCourses')), 404
+
+    try:
+        exercise = session.query(Exercise).filter_by(id=exercise_id).one()
+    except:
+        return redirect(url_for('listCourseExercises', course_id=course.id)), 404
+
+    if request.method == 'POST':
+        session.delete(exercise)
+        session.commit()
+        return redirect(url_for('listCourseExercises', course_id=course.id))
+    else:
+        return render_template('deleteCourseExercise.html', course=course, exercise=exercise)
 
 
 if __name__ == '__main__':
