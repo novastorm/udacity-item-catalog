@@ -208,7 +208,14 @@ def deleteCourseSkill(course_id, skill_id):
 
 @app.route('/course/<int:course_id>/exercise')
 def listCourseExercises(course_id):
-    return  "list course %s exercises" % course_id
+    try:
+        course = session.query(Course).filter_by(id=course_id).one()
+    except:
+        return redirect(url_for('listCourses'))
+
+    exercises = session.query(Exercise).filter_by(course_id=course_id).order_by(asc(Exercise.label)).all()
+
+    return render_template('listCourseExercises.html', course=course, exercises=exercises)
 
 
 @app.route('/course/<int:course_id>/exercise/create', methods=['GET','POST'])
