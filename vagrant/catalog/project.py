@@ -239,7 +239,7 @@ def createCourseExercise(course_id):
             return render_template('createCourseExercise.html', course=course, exercise=exercise)
 
         session.refresh(exercise)
-        return redirect(url_for('updateCourseExercise', course_id=course_id, exercise_id=exercise_id))
+        return redirect(url_for('updateCourseExercise', course_id=course.id, exercise_id=exercise.id))
     else:
         return render_template('createCourseExercise.html', course=course)
 
