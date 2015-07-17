@@ -220,7 +220,28 @@ def listCourseExercises(course_id):
 
 @app.route('/course/<int:course_id>/exercise/create', methods=['GET','POST'])
 def createCourseExercise(course_id):
-    return  "create course %s exercise" % course_id
+    try:
+        course = session.query(Course).filter_by(id=course_id).one()
+    except:
+        return redirect(url_for('listCourses'))
+
+    if request.method == 'POST':
+        exercise = Exercise(
+            course_id = course.id,
+            label = request.form['input-label']
+            )
+        session.add(exercise)
+        try:
+            session.commit()
+        except:
+            session.rollback()
+            flash('Course exercise label exists')
+            return render_template('createCourseExercise.html', course=course, exercise=exercise)
+
+        session.refresh(exercise)
+        return redirect(url_for('updateCourseExercise', course_id=course_id, exercise_id=exercise_id))
+    else:
+        return render_template('createCourseExercise.html', course=course)
 
 
 @app.route('/course/<int:course_id>/exercise/<int:exercise_id>')
