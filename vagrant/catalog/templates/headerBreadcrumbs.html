@@ -5,9 +5,14 @@
 <a href="{{ url_for('showCourse', course_id=course.id) }}">
     <span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span> {{ course.label }}
 </a>
-{% endif %}
-{% if skill and skill.id %}
+    {% if skill and skill.id %}
 <a href="{{ url_for('listCourseSkills', course_id=course.id) }}">
     <span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span> Skills
 </a>
+    {% endif %}
+    {% if exercise and exercise.id %}
+<a href="{{ url_for('listCourseExercises', course_id=course.id) }}">
+    <span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span> Exercises
+</a>
+    {% endif %}
 {% endif %}
