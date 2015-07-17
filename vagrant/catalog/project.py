@@ -203,7 +203,23 @@ def updateCourseSkill(course_id, skill_id):
 
 @app.route('/course/<int:course_id>/skill/<int:skill_id>/delete', methods=['GET','POST'])
 def deleteCourseSkill(course_id, skill_id):
-    return  "delete course %s skill %s" % (course_id, skill_id)
+    # return  "delete course %s skill %s" % (course_id, skill_id)
+    try:
+        course = session.query(Course).filter_by(id=course_id).one()
+    except:
+        return redirect(url_for('listCourses')), 404
+
+    try:
+        skill = session.query(Skill).filter_by(id=skill_id).one()
+    except:
+        return redirect(url_for('listCourseSkills', course_id=course.id)), 404
+
+    if request.method == 'POST':
+        session.delete(skill)
+        session.commit()
+        return redirect(url_for('listCourseSkills', course_id=course.id))
+    else:
+        return render_template('deleteCourseSkill.html', course=course, skill=skill)
 
 
 @app.route('/course/<int:course_id>/exercise')
