@@ -246,7 +246,17 @@ def createCourseExercise(course_id):
 
 @app.route('/course/<int:course_id>/exercise/<int:exercise_id>')
 def showCourseExercise(course_id, exercise_id):
-    return  "show course %s exercise %s" % (course_id, exercise_id)
+    try:
+        course = session.query(Course).filter_by(id=course_id).one()
+    except:
+        return redirect(url_for('listCourses')), 404
+
+    try:
+        exercise = session.query(Exercise).filter_by(id=exercise_id).one()
+    except:
+        return redirect(url_for('listCoursesExercises', course_id=course.id)), 404
+
+    return render_template('showCourseExercise.html', course=course, exercise=exercise)
 
 
 @app.route('/course/<int:course_id>/exercise/<int:exercise_id>/update', methods=['GET','POST'])
