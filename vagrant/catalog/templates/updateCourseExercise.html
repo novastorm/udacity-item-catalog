@@ -1,0 +1,27 @@
+{% extends "main.html" %}
+{% block content %}
+<h1>{{ exercise.label }} <small>Edit Exercise</small></h1>
+<div class="flash">
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul>
+        {% for message in messages %}
+        <li><strong>{{ message }}</strong></li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+{% endwith %}
+</div>
+<form method="POST" action="{{ url_for('updateCourseExercise', course_id=course.id, exercise_id=exercise.id) }}">
+    <div>
+        <label for="input-label">Label:</label>
+        <input name="input-label" type="text" value="{{ exerciseUpdates.label if exerciseUpdates else exercise.label }}" />
+    </div>
+    <div>
+        <label for="input-task">Task:</label>
+        <textarea name="input-task">{{ exerciseUpdates.task if exerciseUpdates else exercise.task }}</textarea>
+    </div>
+    <button type="submit">Update</button>
+    <a href="{{ url_for('showCourseExercise', course_id=course.id, exercise_id=exercise.id) }}"><div class="btn">Cancel</div></a>
+</form>
+{% endblock %}

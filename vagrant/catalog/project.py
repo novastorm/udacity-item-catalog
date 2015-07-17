@@ -261,7 +261,33 @@ def showCourseExercise(course_id, exercise_id):
 
 @app.route('/course/<int:course_id>/exercise/<int:exercise_id>/update', methods=['GET','POST'])
 def updateCourseExercise(course_id, exercise_id):
-    return  "update course %s exercise %s" % (course_id, exercise_id)
+    try:
+        course = session.query(Course).filter_by(id=course_id).one()
+    except:
+        return redirect(url_for('listCourses')), 404
+
+    try:
+        exercise = session.query(Exercise).filter_by(id=exercise_id).one()
+    except:
+        return redirect(url_for('listCoursesExercises', course_id=course.id)), 404
+
+    if request.method == 'POST':
+        updates = Exercise(
+            label = request.form['input-label'],
+            task = request.form['input-task']
+            )
+        try:
+            existingExercise = session.query(Exercise).filter(Exercise.course_id==course.id, Exercise.label==updates.label, Exercise.id!=exercise.id).one()
+            flash('Course exercise label exists')
+            return render_template('updateCourseExercise.html', course=course, exercise=exercise, exerciseUpdates=updates)
+        except:
+            exercise.label = updates.label
+            exercise.task = updates.task
+            session.add(exercise)
+            session.commit()
+            return redirect(url_for('showCourseExercise', course_id=course.id, exercise_id=exercise.id))
+    else:
+        return render_template('updateCourseExercise.html', course=course, exercise=exercise)
 
 
 @app.route('/course/<int:course_id>/exercise/<int:exercise_id>/delete', methods=['GET','POST'])
