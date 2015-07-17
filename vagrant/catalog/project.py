@@ -203,7 +203,6 @@ def updateCourseSkill(course_id, skill_id):
 
 @app.route('/course/<int:course_id>/skill/<int:skill_id>/delete', methods=['GET','POST'])
 def deleteCourseSkill(course_id, skill_id):
-    # return  "delete course %s skill %s" % (course_id, skill_id)
     try:
         course = session.query(Course).filter_by(id=course_id).one()
     except:
