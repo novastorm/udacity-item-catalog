@@ -28,7 +28,7 @@ class Category(Base):
         # Returns object data in a serializable format
         return {
                'id': self.id,
-            'label': self.label,
+            'label': self.label
         }
 
 class Item(Base):
@@ -47,8 +47,10 @@ class Item(Base):
     def serialize(self):
         # Returns object data in a serializable format
         return {
-               'id': self.id,
-            'label': self.label,
+                     'id': self.id,
+                  'label': self.label,
+                   'date': self.date,
+            'category_id': self.category_id
         }
 
 # declare and create database engine
