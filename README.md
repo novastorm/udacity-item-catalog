@@ -26,3 +26,7 @@ Change to the project directory and run the test suite
 
     cd /vagrant/catalog
     python project.py
+
+See project directory for additional information
+
+    [catalog](vagrant/catalog)
