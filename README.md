@@ -28,5 +28,4 @@ Change to the project directory and run the test suite
     python project.py
 
 See project directory for additional information
-
-    [catalog](vagrant/catalog)
+* [catalog](vagrant/catalog)
