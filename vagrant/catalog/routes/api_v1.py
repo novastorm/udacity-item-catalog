@@ -47,7 +47,7 @@ def API_v1_showCourseJSON(course_id):
 
 
 @api_v1.route('/json/course/<int:course_id>/skill')
-def API_v1_listCourseSkillssJSON(course_id):
+def API_v1_listCourseSkillsJSON(course_id):
     try:
         course = session.query(Course).filter_by(id=course_id).one()
     except:
