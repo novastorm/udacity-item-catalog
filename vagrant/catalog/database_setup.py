@@ -1,7 +1,9 @@
 import sys
 
 from sqlalchemy import create_engine
+from sqlalchemy import func
 from sqlalchemy import Column
+from sqlalchemy import Date
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
 from sqlalchemy import String
@@ -34,6 +36,7 @@ class Item(Base):
 
     id = Column(Integer, primary_key=True)
     label = Column(String(127), nullable=False)
+    date = Column(Date, default=func.now())
 
     category_id = Column(Integer, ForeignKey(Category.id), nullable=False)
     category = relationship(Category)
