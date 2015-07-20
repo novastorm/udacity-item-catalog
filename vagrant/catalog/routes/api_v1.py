@@ -70,3 +70,29 @@ def API_v1_showCourseSkillJSON(course_id, skill_id):
         return abort(404)
 
     return jsonify(Skill=skill.serialize)
+
+
+@api_v1.route('/json/course/<int:course_id>/exercise')
+def API_v1_listCourseExercisesJSON(course_id):
+    try:
+        course = session.query(Course).filter_by(id=course_id).one()
+    except:
+        return abort(404)
+
+    exercises = session.query(Exercise).filter_by(course_id=course.id).all()
+    return jsonify(Exercises=[exercise.serialize for exercise in exercises])
+
+
+@api_v1.route('/json/course/<int:course_id>/exercise/<int:exercise_id>')
+def API_v1_showCourseExerciseJSON(course_id, exercise_id):
+    try:
+        course = session.query(Course).filter_by(id=course_id).one()
+    except:
+        return abort(404)
+
+    try:
+        exercise = session.query(Exercise).filter_by(id=exercise_id).one()
+    except:
+        return abort(404)
+
+    return jsonify(Exercise=exercise.serialize)
