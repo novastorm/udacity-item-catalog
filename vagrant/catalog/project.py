@@ -22,6 +22,8 @@ from flask import url_for
 from sqlalchemy import create_engine, asc
 from sqlalchemy.orm import sessionmaker
 
+from routes.api_v1 import api_v1
+
 
 APPLICATION_NAME = "Academy Concepts"
 
@@ -32,6 +34,7 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
+app.register_blueprint(api_v1, url_prefix='/api/v1')
 
 @app.route('/')
 @app.route('/course')
