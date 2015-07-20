@@ -1,3 +1,4 @@
+import flask
 import httplib2
 import json
 import requests
@@ -9,8 +10,6 @@ from database_setup import DatabaseEngineURL
 from database_setup import Exercise
 from database_setup import Skill
 
-from flask import Blueprint
-from flask import Flask
 from flask import abort
 from flask import flash
 from flask import jsonify
@@ -27,7 +26,7 @@ from sqlalchemy.orm import sessionmaker
 DBSession = sessionmaker()
 session = DBSession()
 
-api_v1 = Blueprint('api_v1', __name__)
+api_v1 = flask.Blueprint('api_v1', __name__)
 
 
 @api_v1.route('/json/course/')
