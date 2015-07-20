@@ -11,7 +11,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
 TablePrefix = 'ACT_'
-DatabaseEngine = 'postgresql:///vagrant'
+DatabaseEngineURL = 'postgresql:///vagrant'
 
 Base = declarative_base()
 
@@ -49,5 +49,5 @@ class Item(Base):
         }
 
 # declare and create database engine
-engine = create_engine(DatabaseEngine)
+engine = create_engine(DatabaseEngineURL)
 Base.metadata.create_all(engine)
