@@ -1,24 +1,14 @@
 from database_setup import DatabaseEngineURL
 from database_setup import Base
-from database_setup import Category
-from database_setup import Item
 
 from flask import Flask
-from flask import flash
-from flask import make_response
-from flask import redirect
-from flask import render_template
-from flask import request
 
 from sqlalchemy import create_engine, asc
 from sqlalchemy.orm import sessionmaker
 
-import httplib2
-import json
-import requests
-import string
+from routes.category import category
 
-APPLICATION_NAME = "Academy Concepts"
+APPLICATION_NAME = "Item Catalog"
 
 app = Flask(__name__)
 engine = create_engine(DatabaseEngineURL)
@@ -27,6 +17,7 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 DBH = DBSession()
 
+app.register_blueprint(category)
 
 if __name__ == '__main__':
   app.secret_key = 'super_secret_key'
