@@ -37,6 +37,7 @@ class Item(Base):
     id = Column(Integer, primary_key=True)
     label = Column(String(127), nullable=False)
     date = Column(Date, default=func.now())
+    description = Column(String)
 
     category_id = Column(Integer, ForeignKey(Category.id), nullable=False)
     category = relationship(Category)
@@ -50,6 +51,7 @@ class Item(Base):
                      'id': self.id,
                   'label': self.label,
                    'date': self.date,
+            'description': self.description,
             'category_id': self.category_id
         }
 
