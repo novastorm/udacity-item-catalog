@@ -42,7 +42,7 @@ class Item(Base):
     category_id = Column(Integer, ForeignKey(Category.id), nullable=False)
     category = relationship(Category)
 
-    UniqueConstraint('category_id', 'label')
+    __table_args__ = (UniqueConstraint('category_id', 'label'), None)
 
     @property
     def serialize(self):
