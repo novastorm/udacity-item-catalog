@@ -1,0 +1,9 @@
+{% extends "main.html" %}
+{% block content %}
+<h1>Delete {{ item.label }}?</h1>
+<form action="{{ url_for('category.deleteCategoryItem', category_label=category.label, item_label=item.label) }}" method="POST">
+    <div class="padding-bottom"></div>
+    <a href="{{ url_for('category.showCategoryItem', category_label=category.label, item_label=item.label) }}"><div class="btn btn-default">Cancel</div></a>
+    <button type="submit" class="btn btn-danger" id="submit" type="submit">Delete</button>
+</form>
+{% endblock %}

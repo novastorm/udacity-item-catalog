@@ -1,19 +1,19 @@
 {% extends "main.html" %}
 {% block content %}
+    <div class="flash">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul>
+            {% for message in messages %}
+                <li><strong>{{ message }}</strong></li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+    </div>
     <div class="col-md-3">
         <div><a href="/category/create"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Create Category</a></div>
         <h3>Categories</h3>
-        <div class="flash">
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <ul>
-                {% for message in messages %}
-                    <li><strong>{{ message }}</strong></li>
-                {% endfor %}
-                </ul>
-            {% endif %}
-        {% endwith %}
-        </div>
         {% for record in categories %}
         <div><a href="/category/{{ record.label }}">{{ record.label }}</a> <a href="/category/{{ record.label }}/update"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a></div>
         {% endfor %}

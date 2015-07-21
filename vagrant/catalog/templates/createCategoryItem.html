@@ -1,0 +1,29 @@
+{% extends "main.html" %}
+{% block content %}
+<h1>Create Item</h1>
+    <div class="flash">
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <ul>
+        {% for message in messages %}
+            <li><strong>{{ message }}</strong></li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+{% endwith %}
+    </div>
+<form action="{{ url_for('category.createCategoryItem', category_label=category.label) }}" method="POST">
+    <div class="form-group">
+    <div class="form-group">
+        <label for="input-label">Label:</label>
+        <input name="input-label" type="text" class="form-control" maxlength="100" {% if category %}value="{{ item.label }}"{% endif %}>
+    </div>
+    <div class="form-group">
+        <label for="input-description">Description:</label>
+        <textarea name="input-description" class="form-control"></textarea>
+    </div>
+    <div class="padding-bottom"></div>
+    <a href="{{ url_for('category.showCategory', category_label=category.label) }}"><div class="btn btn-default">Cancel</div></a>
+    <button type="submit" class="btn btn-primary" id="submit" type="submit">Create</button>
+</form>
+{% endblock %}

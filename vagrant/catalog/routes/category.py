@@ -78,7 +78,7 @@ def listCategories():
     return render_template('showHome.html', categories=categories, items=items)
 
 
-@category.route('/category/create')
+@category.route('/category/create', methods=['GET', 'POST'])
 def createCategory():
     return render_template('createCategory.html')
 
@@ -93,8 +93,8 @@ def updateCategory(category_label):
     if request.method == 'POST':
         flash('Category updated')
         return redirect(url_for('category.showCategory', category_label=aCategory['label']))
-    else:
-        return render_template('updateCategory.html', categories=categories, category=aCategory)
+
+    return render_template('updateCategory.html', category=aCategory)
 
 
 @category.route('/category/<string:category_label>/delete', methods=['GET', 'POST'])
@@ -102,25 +102,41 @@ def deleteCategory(category_label):
     if request.method == 'POST':
         flash('Category deleted')
         return redirect(url_for('category.listCategories'))
-    else:
-        return render_template('deleteCategory.html', categories=categories, category=aCategory)
+
+    return render_template('deleteCategory.html', category=aCategory)
 
 
-@category.route('/category/<string:category_label>/create')
+@category.route('/category/<string:category_label>/create', methods=['GET', 'POST'])
 def createCategoryItem(category_label):
-    return "create %s item" % category_label
+    if request.method == 'POST':
+        flash('Category item created')
+        return redirect(url_for('category.showCategoryItem', category_label=aCategory['label'], item_label=aItem['label']))
+
+    if category_label == '':
+        category = { 'label': '' }
+    else:
+        category = aCategory
+    return render_template('createCategoryItem.html', category=category, item=aItem)
 
 
 @category.route('/category/<string:category_label>/<string:item_label>')
 def showCategoryItem(category_label, item_label):
-    return "show %s item %s" % (category_label, item_label)
+    return render_template('showCategoryItem.html', category=aCategory, item=aItem)
 
 
-@category.route('/category/<string:category_label>/<string:item_label>/update')
+@category.route('/category/<string:category_label>/<string:item_label>/update', methods=['GET', 'POST'])
 def updateCategoryItem(category_label, item_label):
-    return "update %s %s" % (category_label, item_label)
+    if request.method == 'POST':
+        flash('Category updated')
+        return redirect(url_for('category.showCategoryItem', category_label=aCategory['label'], item_label=aItem['label']))
+
+    return render_template('updateCategoryItem.html', category=aCategory, item=aItem)
 
 
-@category.route('/category/<string:category_label>/<string:item_label>/delete')
+@category.route('/category/<string:category_label>/<string:item_label>/delete', methods=['GET', 'POST'])
 def deleteCategoryItem(category_label, item_label):
-    return "delete %s %s" % (category_label, item_label)
+    if request.method == 'POST':
+        flash('Category item deleted')
+        return redirect(url_for('category.showCategory', category_label=aCategory['label']))
+
+    return render_template('deleteCategoryItem.html', category=aCategory, item=aItem)
