@@ -1,4 +1,8 @@
 {% extends "CategoryItemLayout.html" %}
 {% block itemContent %}
+<div><a href="/category/create"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Create Category</a></div>
 <h3>Latest Items</h3>
+{% for record in items %}
+<div><a href="/category/{% for x in categories if x.id == record.category_id -%}{{x.label}}{%- endfor %}/{{ record.label }}">{{ record.label }}</a></div>
+{% endfor %}
 {% endblock %}

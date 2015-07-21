@@ -75,7 +75,7 @@ aItem = {
 @category.route('/')
 @category.route('/category')
 def listCategories():
-    return render_template('showHome.html', categories=categories)
+    return render_template('showHome.html', categories=categories, items=items)
 
 
 @category.route('/category/create')
@@ -85,11 +85,16 @@ def createCategory():
 
 @category.route('/category/<string:category_label>')
 def showCategory(category_label):
-    return render_template('showCategory.html', categories=categories, category=aCategory)
+    return render_template('showCategory.html', categories=categories, category=aCategory, items=items)
 
-@category.route('/category/<string:category_label>/update')
+
+@category.route('/category/<string:category_label>/update', methods=['GET', 'POST'])
 def updateCategory(category_label):
-    return "update %s" % category_label
+    if request.method == 'POST':
+        flash('Category updated')
+        return redirect(url_for('category.showCategory', category_label=aCategory['label']))
+    else:
+        return render_template('updateCategory.html', categories=categories, category=aCategory)
 
 
 @category.route('/category/<string:category_label>/delete')
