@@ -8,6 +8,8 @@ from database_setup import Base
 from database_setup import Category
 from database_setup import Item
 
+from datetime import timedelta
+
 from flask import abort
 from flask import flash
 from flask import jsonify
@@ -17,7 +19,7 @@ from flask import render_template
 from flask import request
 from flask import url_for
 
-from sqlalchemy import asc
+from sqlalchemy import asc, desc
 from sqlalchemy.orm import sessionmaker
 
 
@@ -75,11 +77,18 @@ aItem = {
 @category.route('/')
 @category.route('/category')
 def listCategories():
+    categories = session.query(Category).order_by(asc(Category.label))
+
+    items = session.query(Item).order_by(desc(Item.date)).limit(10)
     return render_template('showHome.html', categories=categories, items=items)
 
 
 @category.route('/category/create', methods=['GET', 'POST'])
 def createCategory():
+    if request.method == 'POST':
+        flash('Category created')
+        return redirect(url_for('category.showCategory', category_label=aCategory['label']))
+
     return render_template('createCategory.html')
 
 
