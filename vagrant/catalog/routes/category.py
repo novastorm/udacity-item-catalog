@@ -97,9 +97,13 @@ def updateCategory(category_label):
         return render_template('updateCategory.html', categories=categories, category=aCategory)
 
 
-@category.route('/category/<string:category_label>/delete')
+@category.route('/category/<string:category_label>/delete', methods=['GET', 'POST'])
 def deleteCategory(category_label):
-    return "delete %s" % category_label
+    if request.method == 'POST':
+        flash('Category deleted')
+        return redirect(url_for('category.listCategories'))
+    else:
+        return render_template('deleteCategory.html', categories=categories, category=aCategory)
 
 
 @category.route('/category/<string:category_label>/create')

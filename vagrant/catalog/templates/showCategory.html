@@ -1,5 +1,5 @@
 {% extends "CategoryItemLayout.html" %}
 {% block itemContent %}
-<div><a href="/category/create"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Create Category</a></div>
+<div><a href="/category/{{ category.label if category else 'item' }}/create"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Create Item</a></div>
 <h3>{{ category.label }} Items</h3>
 {% endblock %}
