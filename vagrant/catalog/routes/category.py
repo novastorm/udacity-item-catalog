@@ -99,14 +99,22 @@ def createCategory():
 
         session.refresh(category)
         flash('Category created')
-        return redirect(url_for('category.showCategory', category_label=aCategory['label']))
+        return redirect(url_for('category.showCategory', category_label=category.label))
 
     return render_template('createCategory.html')
 
 
 @category.route('/category/<string:category_label>')
 def showCategory(category_label):
-    return render_template('showCategory.html', categories=categories, category=aCategory, items=items)
+    try:
+        category = session.query(Category).filter_by(label=category_label).one()
+    except:
+        return redirect(url_for('category.listCategories')), 404
+
+    categories = session.query(Category).all()
+    items = session.query(Item).filter_by(category_id=category.id).all()
+
+    return render_template('showCategory.html', categories=categories, category=category, items=items)
 
 
 @category.route('/category/<string:category_label>/update', methods=['GET', 'POST'])
