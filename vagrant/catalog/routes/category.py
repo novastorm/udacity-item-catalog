@@ -86,6 +86,18 @@ def listCategories():
 @category.route('/category/create', methods=['GET', 'POST'])
 def createCategory():
     if request.method == 'POST':
+        category = Category(
+            label = request.form['input-label']
+            )
+        session.add(category)
+        try:
+            session.commit()
+        except:
+            session.rollback()
+            flash('Category exists')
+            return render_template('createCategory.html', category=category)
+
+        session.refresh(category)
         flash('Category created')
         return redirect(url_for('category.showCategory', category_label=aCategory['label']))
 
