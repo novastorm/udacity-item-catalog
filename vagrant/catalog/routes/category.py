@@ -74,14 +74,18 @@ aItem = {
 
 @category.route('/')
 @category.route('/category')
-def listCategoryies():
-    return "List Categories"
+def listCategories():
+    return render_template('showHome.html', categories=categories)
 
 
 @category.route('/category/create')
 def createCategory():
-    return "create category"
+    return render_template('createCategory.html')
 
+
+@category.route('/category/<string:category_label>')
+def showCategory(category_label):
+    return render_template('showCategory.html', categories=categories, category=aCategory)
 
 @category.route('/category/<string:category_label>/update')
 def updateCategory(category_label):

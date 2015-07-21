@@ -1,0 +1,13 @@
+{% extends "main.html" %}
+{% block content %}
+    <div class="col-md-3">
+        <h3>Catagories</h3>
+        <div><a href="/category/create"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Create Category</a></div>
+        {% for record in categories %}
+        <div><a href="/category/{{ record.label }}">{{ record.label }}</a></div>
+        {% endfor %}
+    </div>
+    <div class="col-md-9">
+        <h3>{{ category.label }} Items</h3>
+    </div>
+{% endblock %}
