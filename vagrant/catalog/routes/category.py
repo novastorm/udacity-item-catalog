@@ -33,11 +33,11 @@ category = flask.Blueprint('category', __name__)
 
 @category.route('/')
 @category.route('/category')
-def listCategories():
+def showCategoryMasterDetail():
     categories = session.query(Category).order_by(asc(Category.label))
 
     items = session.query(Item).order_by(desc(Item.date)).limit(10)
-    return render_template('showHome.html', categories=categories, items=items)
+    return render_template('showCategoryMasterDetail.html', categories=categories, items=items)
 
 
 @category.route('/category/create', methods=['GET', 'POST'])
@@ -67,7 +67,7 @@ def showCategory(category_label):
     try:
         category = session.query(Category).filter_by(label=category_label).one()
     except sqlalchemy.orm.exc.NoResultFound:
-        return redirect(url_for('category.listCategories')), 404
+        return redirect(url_for('category.showCategoryMasterDetail')), 404
 
     categories = session.query(Category).order_by(asc(Category.label)).all()
     items = session.query(Item).filter_by(category_id=category.id).all()
@@ -83,7 +83,7 @@ def updateCategory(category_label):
     try:
         category = session.query(Category).filter_by(label=category_label).one()
     except sqlalchemy.orm.exc.NoResultFound:
-        return redirect(url_for('category.listCategories')), 404
+        return redirect(url_for('category.showCategoryMasterDetail')), 404
 
     if request.method == 'POST':
         updates = Category(label=request.form['input-label'])
@@ -120,13 +120,13 @@ def deleteCategory(category_label):
     try:
         category = session.query(Category).filter_by(label=category_label).one()
     except sqlalchemy.orm.exc.NoResultFound:
-        return redirect(url_for('category.listCategories')), 404
+        return redirect(url_for('category.showCategoryMasterDetail')), 404
 
     if request.method == 'POST':
         session.delete(category)
         session.commit()
         flash('Category deleted')
-        return redirect(url_for('category.listCategories'))
+        return redirect(url_for('category.showCategoryMasterDetail'))
 
     return render_template('deleteCategory.html', category=category)
 
@@ -140,7 +140,7 @@ def createCategoryItem(category_label=None):
         try:
             category = session.query(Category).filter_by(label=category_label).one()
         except sqlalchemy.orm.exc.NoResultFound:
-            return redirect(url_for('category.listCategories')), 404
+            return redirect(url_for('category.showCategoryMasterDetail')), 404
 
     categories = session.query(Category).order_by(asc(Category.label)).all()
 
@@ -158,7 +158,7 @@ def createCategoryItem(category_label=None):
         try:
             category = session.query(Category).filter_by(id=item.category_id).one()
         except sqlalchemy.orm.exc.NoResultFound:
-            return redirect(url_for('category.listCategories')), 404
+            return redirect(url_for('category.showCategoryMasterDetail')), 404
 
         session.add(item)
 
@@ -184,29 +184,92 @@ def showCategoryItem(category_label, item_label):
     try:
         category = session.query(Category).filter_by(label=category_label).one()
     except sqlalchemy.orm.exc.NoResultFound:
-        return redirect(url_for('category.listCategories')), 404
+        return redirect(url_for('category.showCategoryMasterDetail')), 404
 
     try:
-        item = session.query(Item).filter_by(label=item_label).one()
+        item = session.query(Item).filter_by(label=item_label, category_id=category.id).one()
     except sqlalchemy.orm.exc.NoResultFound:
         return redirect(url_for('category.showCategory', category_label=category.label)), 404
 
-    return render_template('showCategoryItem.html', category=category, item=item)
+    return render_template('showCategoryItem.html', item=item)
 
 
 @category.route('/category/<string:category_label>/<string:item_label>/update', methods=['GET', 'POST'])
 def updateCategoryItem(category_label, item_label):
-    if request.method == 'POST':
-        flash('Category updated')
-        return redirect(url_for('category.showCategoryItem', category_label=aCategory['label'], item_label=aItem['label']))
+    try:
+        category = session.query(Category).filter_by(label=category_label).one()
+    except sqlalchemy.orm.exc.NoResultFound:
+        return redirect(url_for('category.showCategoryMasterDetail')), 404
 
-    return render_template('updateCategoryItem.html', category=aCategory, item=aItem)
+    try:
+        item = session.query(Item).filter_by(label=item_label, category_id=category.id).one()
+    except sqlalchemy.orm.exc.NoResultFound:
+        return redirect(url_for('category.showCategory', category_label=category.label)), 404
+
+    categories = session.query(Category).order_by(asc(Category.label)).all()
+
+    if request.method =='POST':
+        updates = Item(
+            label = request.form['input-label'],
+            description = request.form['input-description'],
+            category_id = request.form['input-category-id']
+            )
+
+        try:
+            updates.category = session.query(Category).filter_by(id=updates.category_id).one()
+        except sqlalchemy.orm.exc.NoResultFound:
+            return redirect(url_for('category.showCategoryMasterDetail')), 404
+
+        try:
+            # test if item label exists
+            session.query(Item)\
+            .filter(
+                Item.label==updates.label,
+                Item.category_id==updates.category_id,
+                Item.id!=item.id)\
+            .one()
+        except sqlalchemy.orm.exc.NoResultFound:
+            # expect no duplicate records
+            pass
+        else:
+            flash('%s item label exists' % updates.category.label)
+            return render_template('updateCategoryItem.html',
+                categories=categories,
+                item=item,
+                itemUpdates=updates)
+
+        item.label = updates.label
+        item.description = updates.description
+        item.category_id = updates.category_id
+        session.add(item)
+        session.commit()
+        session.refresh(item)
+        flash('%s item updated' % item.category.label)
+        return redirect(url_for('category.showCategoryItem',
+            category_label=item.category.label,
+            item_label=item.label))
+
+    return render_template('updateCategoryItem.html',
+        categories=categories,
+        item=item)
 
 
 @category.route('/category/<string:category_label>/<string:item_label>/delete', methods=['GET', 'POST'])
 def deleteCategoryItem(category_label, item_label):
-    if request.method == 'POST':
-        flash('Category item deleted')
-        return redirect(url_for('category.showCategory', category_label=aCategory['label']))
+    try:
+        category = session.query(Category).filter_by(label=category_label).one()
+    except sqlalchemy.orm.exc.NoResultFound:
+        return redirect(url_for('category.showCategoryMasterDetail')), 404
 
-    return render_template('deleteCategoryItem.html', category=aCategory, item=aItem)
+    try:
+        item = session.query(Item).filter_by(label=item_label, category_id=category.id).one()
+    except sqlalchemy.orm.exc.NoResultFound:
+        return redirect(url_for('category.showCategory', category_label=category.label)), 404
+
+    if request.method == 'POST':
+        session.delete(item)
+        session.commit()
+        flash('Category item deleted')
+        return redirect(url_for('category.showCategory', category_label=category.label))
+
+    return render_template('deleteCategoryItem.html', item=item)

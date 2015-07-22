@@ -1,8 +1,8 @@
 {% extends "CategoryItemLayout.html" %}
 {% block itemContent %}
-<div><a href="/category/{{ category.label if category else 'item' }}/create"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Create Item</a></div>
+<div><a href="/category/{{ category.label }}/create"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Create Item</a></div>
 <h3>{{ category.label }} Items</h3>
 {% for record in items %}
-<div><a href="/category/{% for x in categories if x.id == record.category_id -%}{{x.label}}{%- endfor %}/{{ record.label }}">{{ record.label }}</a></div>
+<div><a href="/category/{{ record.category.label }}/{{ record.label }}">{{ record.label }}</a></div>
 {% endfor %}
 {% endblock %}

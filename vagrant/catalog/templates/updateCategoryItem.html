@@ -1,8 +1,7 @@
 {% extends "main.html" %}
 {% block content %}
-<h1>{{ item.label }} <small>Update Item</small></h1>
-<form action="{{ url_for('category.updateCategoryItem', category_label=category.label, item_label=item.label) }}" method="POST">
-    <div class="flash">
+<h1>{{ item.category.label }} - {{ item.label }} <small>Update Item</small></h1>
+<div class="flash">
 {% with messages = get_flashed_messages() %}
     {% if messages %}
         <ul>
@@ -12,11 +11,12 @@
         </ul>
     {% endif %}
 {% endwith %}
-    </div>
+</div>
+<form action="{{ url_for('category.updateCategoryItem', category_label=item.category.label, item_label=item.label) }}" method="POST">
     <div class="form-group">
         <select name="input-category-id" class="form-control">
             {% for record in categories %}
-                <option value={{ record.id }}>{{ record.label }}</option>
+                <option value="{{ record.id }}"{% if (itemUpdates and record.id == itemUpdates.category.id) or (not itemUpdates and record.id == item.category.id) %} selected{% endif %}>{{ record.label }}</option>
             {% endfor %}
         </select>
     </div>
@@ -29,7 +29,7 @@
         <textarea name="input-description" class="form-control">{{ item.description or '' }}</textarea>
     </div>
     <div class="padding-bottom"></div>
-    <a href="{{ url_for('category.showCategoryItem', category_label=category.label, item_label=item.label) }}"><div class="btn btn-default">Cancel</div></a>
+    <a href="{{ url_for('category.showCategoryItem', category_label=item.category.label, item_label=item.label) }}"><div class="btn btn-default">Cancel</div></a>
     <button type="submit" class="btn btn-primary" id="submit" type="submit">Update</button>
 </form>
 {% endblock %}
