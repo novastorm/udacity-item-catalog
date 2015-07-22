@@ -30,51 +30,6 @@ session = DBSession()
 
 category = flask.Blueprint('category', __name__)
 
-categories = [
-    {
-        'id': '1',
-        'label': 'Maritial Arts'
-    },
-    {
-        'id': '2',
-        'label': 'Hockey'
-    },
-    {
-        'id': '3',
-        'label': 'Softball'
-    }
-]
-
-aCategory = {
-    'id': '1',
-    'label': 'Maritial Arts'
-}
-
-items = [
-    {
-        'id': '1',
-        'label': 'Fingerless gloves',
-        'date': '2015-07-20',
-        'description': 'Gloves with fingers cut out to allowing for direct contact with environment.',
-        'category_id': '1',
-    },
-    {
-        'id': '2',
-        'label': 'Padded headgear',
-        'date': '2015-07-10',
-        'description': 'Padded headgear to provide some head protection.',
-        'category_id': '1',
-    }
-]
-
-aItem = {
-    'id': '1',
-    'label': 'Fingerless gloves',
-    'date': '2015-07-20',
-    'description': 'Gloves with fingers cut out to allowing for direct contact with environment.',
-    'category_id': '1',
-}
-
 
 @category.route('/')
 @category.route('/category')
