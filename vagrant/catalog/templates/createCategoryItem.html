@@ -12,10 +12,11 @@
     {% endif %}
 {% endwith %}
     </div>
-<form action="{{ url_for('category.createCategoryItem', category_label=category.label) }}" method="POST">
+<form action="{{ url_for('category.createCategoryItem') }}" method="POST">
     <div class="form-group">
         <select name="input-category-id" class="form-control">
-            {% for record in categories %}
+            <option value={{ categories[0].id }} selected>{{ categories[0].label }}</option>
+            {% for record in categories[1:] %}
                 <option value={{ record.id }}>{{ record.label }}</option>
             {% endfor %}
         </select>

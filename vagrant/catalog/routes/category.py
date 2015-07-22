@@ -134,10 +134,6 @@ def deleteCategory(category_label):
 @category.route('/category/create-item', methods=['GET', 'POST'])
 @category.route('/category/<string:category_label>/create', methods=['GET', 'POST'])
 def createCategoryItem(category_label=None):
-    if request.method == 'POST':
-        flash('Category item created')
-        return redirect(url_for('category.showCategoryItem', category_label=aCategory['label'], item_label=aItem['label']))
-
     if category_label == None:
         category = { 'label': '' }
     else:
@@ -146,12 +142,56 @@ def createCategoryItem(category_label=None):
         except sqlalchemy.orm.exc.NoResultFound:
             return redirect(url_for('category.listCategories')), 404
 
+    categories = session.query(Category).order_by(asc(Category.label)).all()
+
+    if request.method == 'POST':
+        item = Item(
+            label = request.form['input-label'],
+            description = request.form['input-description'],
+            category_id = request.form['input-category-id']
+            )
+
+        if request.form['input-label'] == "":
+            flash('Item label required')
+            return render_template('createCategoryItem.html', categories=categories, category=category, item=item)
+
+        try:
+            category = session.query(Category).filter_by(id=item.category_id).one()
+        except sqlalchemy.orm.exc.NoResultFound:
+            return redirect(url_for('category.listCategories')), 404
+
+        session.add(item)
+
+        try:
+            session.commit()
+        except sqlalchemy.exc.IntegrityError:
+            session.rollback()
+            flash('%s item label exists' % category.label)
+            return render_template('createCategoryItem.html', categories=categories, category=category, item=item)
+        except Exception, err:
+            print Exception, err
+            abort()
+
+        session.refresh(item)
+        flash('%s item created' % category.label)
+        return redirect(url_for('category.showCategoryItem', category_label=category.label, item_label=item.label))
+
     return render_template('createCategoryItem.html', categories=categories, category=category)
 
 
 @category.route('/category/<string:category_label>/<string:item_label>')
 def showCategoryItem(category_label, item_label):
-    return render_template('showCategoryItem.html', category=aCategory, item=aItem)
+    try:
+        category = session.query(Category).filter_by(label=category_label).one()
+    except sqlalchemy.orm.exc.NoResultFound:
+        return redirect(url_for('category.listCategories')), 404
+
+    try:
+        item = session.query(Item).filter_by(label=item_label).one()
+    except sqlalchemy.orm.exc.NoResultFound:
+        return redirect(url_for('category.showCategory', category_label=category.label)), 404
+
+    return render_template('showCategoryItem.html', category=category, item=item)
 
 
 @category.route('/category/<string:category_label>/<string:item_label>/update', methods=['GET', 'POST'])
