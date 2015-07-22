@@ -1,21 +1,12 @@
 import flask
-import httplib2
-import json
-import requests
-import string
 import sqlalchemy.exc
 import sqlalchemy.orm.exc
 
-from database_setup import Base
 from database_setup import Category
 from database_setup import Item
 
-from datetime import timedelta
-
 from flask import abort
 from flask import flash
-from flask import jsonify
-from flask import make_response
 from flask import redirect
 from flask import render_template
 from flask import request
