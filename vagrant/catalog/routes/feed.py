@@ -1,14 +1,9 @@
 import flask
-import json
-import sqlalchemy.exc
-import sqlalchemy.orm.exc
 
-from database_setup import Category
 from database_setup import Item
-from flask import abort
 from flask import request
 from flask import url_for
-from sqlalchemy import asc, desc
+from sqlalchemy import desc
 from sqlalchemy.orm import sessionmaker
 from urlparse import urljoin
 from werkzeug.contrib.atom import AtomFeed
