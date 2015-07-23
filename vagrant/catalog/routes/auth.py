@@ -70,7 +70,6 @@ def gconnect():
     return response
 
   # check if user is already logged in
-  # stored_credentials = login_session.get('credentials')
   stored_access_token = login_session.get('access_token')
   stored_gplus_id = login_session.get('gplus_id')
   # if stored_credentials is not None and gplus_id == stored_gplus_id:
@@ -79,7 +78,6 @@ def gconnect():
     response.headers['Content-Type'] = 'application/json'
 
   # store access token in session
-  # login_session['credentials'] = credentials.to_json()
   login_session['access_token'] = access_token
   login_session['gplus_id'] = gplus_id
 
@@ -109,16 +107,13 @@ def gconnect():
 @auth.route("/gdisconnect")
 def gdisconnect():
   # only disconnet a connected user
-  # credentials = login_session.get('credentials')
   access_token = login_session.get('access_token')
   # check if connected user
-  # if credentials is None:
   if access_token is None:
     response = make_response(json.dumps('Current use not connected'), 401)
     response.headers['Content-Type'] = 'application/json'
     return response
   # revoke current token
-  # access_token = credentials.access_token
   url = ('https://accounts.google.com/a/oauth2/revoke?token=%s' % access_token)
   h = httplib2.Http()
   result = h.request(url, 'GET')[0]
