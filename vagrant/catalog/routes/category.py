@@ -1,21 +1,12 @@
 import flask
-import httplib2
-import json
-import requests
-import string
 import sqlalchemy.exc
 import sqlalchemy.orm.exc
 
-from database_setup import Base
 from database_setup import Category
 from database_setup import Item
 
-from datetime import timedelta
-
 from flask import abort
 from flask import flash
-from flask import jsonify
-from flask import make_response
 from flask import redirect
 from flask import render_template
 from flask import request
@@ -216,23 +207,18 @@ def updateCategoryItem(category_label, item_label):
             )
 
         try:
-            updates.category = session.query(Category).filter_by(id=updates.category_id).one()
+            updatedCategory = session.query(Category).filter_by(id=updates.category_id).one()
         except sqlalchemy.orm.exc.NoResultFound:
             return redirect(url_for('category.showCategoryMasterDetail')), 404
 
         try:
             # test if item label exists
-            session.query(Item)\
-            .filter(
-                Item.label==updates.label,
-                Item.category_id==updates.category_id,
-                Item.id!=item.id)\
-            .one()
+            session.query(Item).filter(Item.label==updates.label, Item.category_id==updates.category_id, Item.id!=item.id).one()
         except sqlalchemy.orm.exc.NoResultFound:
             # expect no duplicate records
             pass
         else:
-            flash('%s item label exists' % updates.category.label)
+            flash('%s item label exists' % updatedCategory.label)
             return render_template('updateCategoryItem.html',
                 categories=categories,
                 item=item,
