@@ -10,7 +10,7 @@ from werkzeug.contrib.atom import AtomFeed
 
 
 DBSession = sessionmaker()
-session = DBSession()
+DBH = DBSession()
 
 feed = flask.Blueprint('feed', __name__)
 
@@ -20,7 +20,7 @@ def make_external(url):
 @feed.route('/recent.atom')
 def recent_feed():
     feed = AtomFeed('Item Catalog', feed_url=request.url, url=request.url_root)
-    items = session.query(Item).order_by(desc(Item.date)).limit(15).all()
+    items = DBH.query(Item).order_by(desc(Item.date)).limit(15).all()
 
     for item in items:
         feed.add(
