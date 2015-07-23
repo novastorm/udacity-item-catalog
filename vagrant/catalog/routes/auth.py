@@ -110,7 +110,7 @@ def gdisconnect():
   access_token = login_session.get('access_token')
   # check if connected user
   if access_token is None:
-    response = make_response(json.dumps('Current use not connected'), 401)
+    response = make_response(json.dumps('Current user not connected'), 401)
     response.headers['Content-Type'] = 'application/json'
     return response
   # revoke current token
@@ -120,7 +120,7 @@ def gdisconnect():
 
   if result['status'] == '200':
     # reset session
-    del login_session['credentials']
+    del login_session['access_token']
     del login_session['gplus_id']
     del login_session['username']
     del login_session['email']

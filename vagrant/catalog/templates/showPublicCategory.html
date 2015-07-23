@@ -1,0 +1,7 @@
+{% extends "PublicCategoryItemLayout.html" %}
+{% block itemContent %}
+<h3>{{ category.label }} Items</h3>
+{% for record in items %}
+<div><a href="/category/{{ record.category.label }}/{{ record.label }}">{{ record.label }}</a></div>
+{% endfor %}
+{% endblock %}
