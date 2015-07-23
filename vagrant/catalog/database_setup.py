@@ -22,6 +22,7 @@ class Category(Base):
 
     id = Column(Integer, primary_key=True)
     label = Column(String(127), nullable=False, unique=True)
+    items = relationship('Item', backref='category', order_by='Item.label')
 
     @property
     def serialize(self):
@@ -30,6 +31,16 @@ class Category(Base):
                'id': self.id,
             'label': self.label
         }
+
+    @property
+    def serializeExpanded(self):
+        # Returns object data in a serializable format
+        return {
+               'id': self.id,
+            'label': self.label,
+            'items': [item.serialize for item in self.items]
+        }
+
 
 class Item(Base):
     __tablename__ = '%s%s' % (TablePrefix,'Item')
@@ -40,7 +51,7 @@ class Item(Base):
     description = Column(String)
 
     category_id = Column(Integer, ForeignKey(Category.id), nullable=False)
-    category = relationship(Category)
+    # category = relationship(Category)
 
     __table_args__ = (UniqueConstraint('category_id', 'label'), None)
 
@@ -50,7 +61,7 @@ class Item(Base):
         return {
                      'id': self.id,
                   'label': self.label,
-                   'date': self.date,
+                   'date': str(self.date),
             'description': self.description,
             'category_id': self.category_id
         }

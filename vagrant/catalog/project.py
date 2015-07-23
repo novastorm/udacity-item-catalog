@@ -8,6 +8,7 @@ from sqlalchemy.orm import sessionmaker
 
 from routes.category import category
 from routes.api_v1 import api_v1
+from routes.feed import feed
 
 APPLICATION_NAME = "Item Catalog"
 
@@ -20,6 +21,7 @@ DBH = DBSession()
 
 app.register_blueprint(category)
 app.register_blueprint(api_v1, url_prefix='/api/v1')
+app.register_blueprint(feed, url_prefix='/feed')
 
 if __name__ == '__main__':
   app.secret_key = 'super_secret_key'
