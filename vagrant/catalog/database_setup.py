@@ -21,9 +21,13 @@ class User(Base):
     __tablename__ = "%s%s" % (TablePrefix, 'User')
 
     id = Column(Integer, primary_key=True)
+    provider = Column(String(127), nullable=False)
     name = Column(String(127), nullable=False)
     email = Column(String(127), nullable=False)
     picture = Column(String)
+
+    __table_args__ = (UniqueConstraint('provider', 'email'), None)
+
 
 class Category(Base):
     __tablename__ = '%s%s' % (TablePrefix, 'Category')
