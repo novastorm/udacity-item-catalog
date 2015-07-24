@@ -2,12 +2,6 @@ import flask
 import random
 import string
 
-import sqlalchemy.exc
-import sqlalchemy.orm.exc
-
-from database_setup import Category
-from database_setup import Item
-
 from flask import abort
 from flask import flash
 from flask import redirect
@@ -17,8 +11,14 @@ from flask import session as login_session
 from flask import url_for
 
 from sqlalchemy import asc, desc
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm.exc import NoResultFound
 
+from database_setup import Category
+from database_setup import Item
+
+from routes import auth
 
 DBSession = sessionmaker()
 DBH = DBSession()
@@ -46,7 +46,7 @@ def showCategoryMasterDetail():
     categories = DBH.query(Category).order_by(asc(Category.label))
     items = DBH.query(Item).order_by(desc(Item.date)).limit(10)
 
-    if 'username' in login_session:
+    if 'name' in login_session:
         template_file = 'showCategoryMasterDetail.html'
     else:
         template_file = 'showPublicCategoryMasterDetail.html'
@@ -56,7 +56,7 @@ def showCategoryMasterDetail():
 
 @category.route('/category/create', methods=['GET', 'POST'])
 def createCategory():
-    if 'username' not in login_session:
+    if 'name' not in login_session:
         return redirect(url_for('auth.showLogin'))
 
     if request.method == 'POST':
@@ -65,7 +65,8 @@ def createCategory():
             abort(403)
 
         category = Category(
-            label = request.form['input-label']
+            label = request.form['input-label'],
+            user_id = login_session['user_id']
             )
 
         if not category.label:
@@ -77,7 +78,7 @@ def createCategory():
         DBH.add(category)
         try:
             DBH.commit()
-        except sqlalchemy.exc.IntegrityError, err:
+        except IntegrityError, err:
             print err
             DBH.rollback()
             flash('Category exists')
@@ -97,7 +98,7 @@ def createCategory():
 def showCategory(category_label):
     try:
         category = DBH.query(Category).filter_by(label=category_label).one()
-    except sqlalchemy.orm.exc.NoResultFound:
+    except NoResultFound:
         return redirect(url_for('category.showCategoryMasterDetail')), 404
 
     categories = (
@@ -112,7 +113,7 @@ def showCategory(category_label):
         .all()
         )
 
-    if 'username' in login_session:
+    if 'name' in login_session:
         template_file = 'showCategory.html'
     else:
         template_file = 'showPublicCategory.html'
@@ -124,13 +125,19 @@ def showCategory(category_label):
 @category.route('/category/<string:category_label>/update',
     methods=['GET', 'POST'])
 def updateCategory(category_label):
-    if 'username' not in login_session:
+    if 'name' not in login_session:
         return redirect(url_for('auth.showLogin'))
 
     try:
         category = DBH.query(Category).filter_by(label=category_label).one()
-    except sqlalchemy.orm.exc.NoResultFound:
+    except NoResultFound:
         return redirect(url_for('category.showCategoryMasterDetail')), 404
+
+    if category.user_id != auth.getUserId(login_session['email']):
+        flash('Not authorized to edit %s' % category.label)
+        return redirect(url_for('category.showCategoryMasterDetail'))
+
+    items = DBH.query(Item).filter_by(category_id=category.id).all()
 
     if request.method == 'POST':
         nonce = request.form['nonce']
@@ -147,14 +154,14 @@ def updateCategory(category_label):
                     Category.label==updates.label, Category.id!=category.id)
                 .one()
             )
-        except sqlalchemy.orm.exc.NoResultFound:
+        except NoResultFound:
             # expect no duplicate records
             pass
         else:
             flash('Category label exists')
             return render_template(
                 'updateCategory.html', category=category,
-                categoryUpdates=updates, nonce=generateNonce())
+                categoryUpdates=updates, items=items, nonce=generateNonce())
 
         category.label = updates.label
         DBH.add(category)
@@ -164,19 +171,31 @@ def updateCategory(category_label):
             category_label=category.label))
 
     return render_template('updateCategory.html', category=category,
-        nonce=generateNonce())
+        items=items, nonce=generateNonce())
 
 
 @category.route('/category/<string:category_label>/delete',
     methods=['GET', 'POST'])
 def deleteCategory(category_label):
-    if 'username' not in login_session:
+    if 'name' not in login_session:
         return redirect(url_for('auth.showLogin'))
 
     try:
         category = DBH.query(Category).filter_by(label=category_label).one()
-    except sqlalchemy.orm.exc.NoResultFound:
+    except NoResultFound:
         return redirect(url_for('category.showCategoryMasterDetail')), 404
+
+    if category.user_id != auth.getUserId(login_session['email']):
+        flash('Not authorized to edit %s' % category.label)
+        return redirect(url_for('category.showCategoryMasterDetail'))
+
+    items = DBH.query(Item).filter_by(category_id=category.id).all()
+
+    if len(items) > 0:
+        flash('Category not empty')
+        return redirect(url_for(
+            'category.updateCategory', category_label=category.label))
+
 
     if request.method == 'POST':
         nonce = request.form['nonce']
@@ -196,7 +215,7 @@ def deleteCategory(category_label):
 @category.route('/category/<string:category_label>/create',
     methods=['GET', 'POST'])
 def createCategoryItem(category_label=None):
-    if 'username' not in login_session:
+    if 'name' not in login_session:
         return redirect(url_for('auth.showLogin'))
 
     if category_label == None:
@@ -208,7 +227,7 @@ def createCategoryItem(category_label=None):
                 .filter_by(label=category_label)
                 .one()
                 )
-        except sqlalchemy.orm.exc.NoResultFound:
+        except NoResultFound:
             return redirect(url_for('category.showCategoryMasterDetail')), 404
 
     categories = DBH.query(Category).order_by(asc(Category.label)).all()
@@ -221,7 +240,8 @@ def createCategoryItem(category_label=None):
         item = Item(
             label = request.form['input-label'],
             description = request.form['input-description'],
-            category_id = request.form['input-category-id']
+            category_id = request.form['input-category-id'],
+            user_id = login_session['user_id']
             )
 
         if request.form['input-label'] == "":
@@ -232,14 +252,14 @@ def createCategoryItem(category_label=None):
 
         try:
             category = DBH.query(Category).filter_by(id=item.category_id).one()
-        except sqlalchemy.orm.exc.NoResultFound:
+        except NoResultFound:
             return redirect(url_for('category.showCategoryMasterDetail')), 404
 
         DBH.add(item)
 
         try:
             DBH.commit()
-        except sqlalchemy.exc.IntegrityError:
+        except IntegrityError:
             DBH.rollback()
             flash('%s item label exists' % category.label)
             return render_template('createCategoryItem.html',
@@ -263,7 +283,7 @@ def createCategoryItem(category_label=None):
 def showCategoryItem(category_label, item_label):
     try:
         category = DBH.query(Category).filter_by(label=category_label).one()
-    except sqlalchemy.orm.exc.NoResultFound:
+    except NoResultFound:
         return redirect(url_for('category.showCategoryMasterDetail')), 404
 
     try:
@@ -272,13 +292,13 @@ def showCategoryItem(category_label, item_label):
             .filter_by(label=item_label, category_id=category.id)
             .one()
             )
-    except sqlalchemy.orm.exc.NoResultFound:
+    except NoResultFound:
         return redirect(
             url_for(
                 'category.showCategory',
                 category_label=category.label)), 404
 
-    if 'username' in login_session:
+    if 'name' in login_session:
         template_file = 'showCategoryItem.html'
     else:
         template_file = 'showPublicCategoryItem.html'
@@ -289,12 +309,12 @@ def showCategoryItem(category_label, item_label):
 @category.route('/category/<string:category_label>/<string:item_label>/update',
     methods=['GET', 'POST'])
 def updateCategoryItem(category_label, item_label):
-    if 'username' not in login_session:
+    if 'name' not in login_session:
         return redirect(url_for('auth.showLogin'))
 
     try:
         category = DBH.query(Category).filter_by(label=category_label).one()
-    except sqlalchemy.orm.exc.NoResultFound:
+    except NoResultFound:
         return redirect(url_for('category.showCategoryMasterDetail')), 404
 
     try:
@@ -303,11 +323,18 @@ def updateCategoryItem(category_label, item_label):
             .filter_by(label=item_label, category_id=category.id)
             .one()
             )
-    except sqlalchemy.orm.exc.NoResultFound:
+    except NoResultFound:
         return redirect(
             url_for(
                 'category.showCategory',
                 category_label=category.label)), 404
+
+    if item.user_id != auth.getUserId(login_session['email']):
+        flash('Not authorized to edit %s - %s' % (
+            item.category.label, item.label))
+        return redirect(url_for(
+            'category.showCategoryItem', category_label=item.category.label
+            , item_label=item.label))
 
     categories = DBH.query(Category).order_by(asc(Category.label)).all()
 
@@ -328,7 +355,7 @@ def updateCategoryItem(category_label, item_label):
                 .filter_by(id=updates.category_id)
                 .one()
                 )
-        except sqlalchemy.orm.exc.NoResultFound:
+        except NoResultFound:
             return redirect(url_for('category.showCategoryMasterDetail')), 404
 
         try:
@@ -342,7 +369,7 @@ def updateCategoryItem(category_label, item_label):
                     )
                 .one()
             )
-        except sqlalchemy.orm.exc.NoResultFound:
+        except NoResultFound:
             # expect no duplicate records
             pass
         else:
@@ -371,12 +398,12 @@ def updateCategoryItem(category_label, item_label):
 @category.route('/category/<string:category_label>/<string:item_label>/delete',
     methods=['GET', 'POST'])
 def deleteCategoryItem(category_label, item_label):
-    if 'username' not in login_session:
+    if 'name' not in login_session:
         return redirect(url_for('auth.showLogin'))
 
     try:
         category = DBH.query(Category).filter_by(label=category_label).one()
-    except sqlalchemy.orm.exc.NoResultFound:
+    except NoResultFound:
         return redirect(url_for('category.showCategoryMasterDetail')), 404
 
     try:
@@ -385,11 +412,18 @@ def deleteCategoryItem(category_label, item_label):
             .filter_by(label=item_label, category_id=category.id)
             .one()
             )
-    except sqlalchemy.orm.exc.NoResultFound:
+    except NoResultFound:
         return redirect(
             url_for(
                 'category.showCategory',
                 category_label=category.label)), 404
+
+    if item.user_id != auth.getUserId(login_session['email']):
+        flash('Not authorized to delete %s - %s' % (
+            item.category.label, item.label))
+        return redirect(url_for(
+            'category.showCategoryItem', category_label=item.category.label
+            , item_label=item.label))
 
     if request.method == 'POST':
         nonce = request.form['nonce']
@@ -399,9 +433,7 @@ def deleteCategoryItem(category_label, item_label):
         DBH.delete(item)
         DBH.commit()
         flash('Category item deleted')
-        return redirect(
-            url_for(
-                'category.showCategory',
-                category_label=category.label))
+        return redirect(url_for(
+                'category.showCategory', category_label=category.label))
 
     return render_template('deleteCategoryItem.html', item=item, nonce=generateNonce())
