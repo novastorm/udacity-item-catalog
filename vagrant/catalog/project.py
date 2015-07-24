@@ -6,8 +6,9 @@ from flask import Flask
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from routes.category import category
 from routes.api_v1 import api_v1
+from routes.auth import auth
+from routes.category import category
 from routes.feed import feed
 
 APPLICATION_NAME = "Item Catalog"
@@ -19,6 +20,7 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 DBH = DBSession()
 
+app.register_blueprint(auth)
 app.register_blueprint(category)
 app.register_blueprint(api_v1, url_prefix='/api/v1')
 app.register_blueprint(feed, url_prefix='/feed')
