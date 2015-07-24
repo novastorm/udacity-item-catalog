@@ -35,6 +35,7 @@ class Category(Base):
     id = Column(Integer, primary_key=True)
     label = Column(String(127), nullable=False, unique=True)
     items = relationship('Item', backref='category', order_by='Item.label')
+    image_url = Column(String)
     user_id = Column(Integer, ForeignKey(User.id), nullable=False)
 
     @property
