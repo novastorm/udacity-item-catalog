@@ -1,16 +1,5 @@
 {% extends "main.html" %}
 {% block content %}
 <h3>{{ item.category.label }} - {{ item.label }}</h3>
-<div class="flash">
-{% with messages = get_flashed_messages() %}
-    {% if messages %}
-        <ul>
-        {% for message in messages %}
-            <li><strong>{{ message }}</strong></li>
-        {% endfor %}
-        </ul>
-    {% endif %}
-{% endwith %}
-</div>
 <div>{{ item.description }}</div>
 {% endblock %}

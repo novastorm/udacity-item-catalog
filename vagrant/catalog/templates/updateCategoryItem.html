@@ -30,7 +30,9 @@
         <textarea name="input-description" class="form-control">{{ item.description or '' }}</textarea>
     </div>
     <div class="padding-bottom"></div>
-    <a href="{{ url_for('category.showCategoryItem', category_label=item.category.label, item_label=item.label) }}"><div class="btn btn-default">Cancel</div></a>
-    <button type="submit" class="btn btn-primary" id="submit" type="submit">Update</button>
+    <span class="pull-right">
+        <a href="{{ url_for('category.showCategoryItem', category_label=item.category.label, item_label=item.label) }}"><div class="btn btn-default">Cancel</div></a>
+        <button type="submit" class="btn btn-primary" id="submit" type="submit">Update</button>
+    </span>
 </form>
 {% endblock %}
