@@ -25,6 +25,7 @@ class User(Base):
     name = Column(String(127), nullable=False)
     email = Column(String(127), nullable=False)
     picture = Column(String)
+    items = relationship('Item', backref='user', order_by='Item.label')
 
     __table_args__ = (UniqueConstraint('provider', 'email'), None)
 
@@ -64,6 +65,7 @@ class Item(Base):
 
     category_id = Column(Integer, ForeignKey(Category.id), nullable=False)
     # category = relationship(Category)
+    user_id = Column(Integer, ForeignKey(User.id), nullable=False)
 
     __table_args__ = (UniqueConstraint('category_id', 'label'), None)
 
