@@ -133,6 +133,10 @@ def updateCategory(category_label):
     except NoResultFound:
         return redirect(url_for('category.showCategoryMasterDetail')), 404
 
+    if category.user_id != auth.getUserId(login_session['email']):
+        flash('Not authorized to edit %s' % category.label)
+        return redirect(url_for('category.showCategoryMasterDetail'))
+
     items = DBH.query(Item).filter_by(category_id=category.id).all()
 
     if request.method == 'POST':
@@ -181,13 +185,16 @@ def deleteCategory(category_label):
     except NoResultFound:
         return redirect(url_for('category.showCategoryMasterDetail')), 404
 
+    if category.user_id != auth.getUserId(login_session['email']):
+        flash('Not authorized to edit %s' % category.label)
+        return redirect(url_for('category.showCategoryMasterDetail'))
+
     items = DBH.query(Item).filter_by(category_id=category.id).all()
 
     if len(items) > 0:
         flash('Category not empty')
-        return render_template(
-            'updateCategory.html', category=category, items=items,
-            nonce=generateNonce())
+        return redirect(url_for(
+            'category.updateCategory', category_label=category.label))
 
 
     if request.method == 'POST':
@@ -322,6 +329,13 @@ def updateCategoryItem(category_label, item_label):
                 'category.showCategory',
                 category_label=category.label)), 404
 
+    if item.user_id != auth.getUserId(login_session['email']):
+        flash('Not authorized to edit %s - %s' % (
+            item.category.label, item.label))
+        return redirect(url_for(
+            'category.showCategoryItem', category_label=item.category.label
+            , item_label=item.label))
+
     categories = DBH.query(Category).order_by(asc(Category.label)).all()
 
     if request.method =='POST':
@@ -404,6 +418,13 @@ def deleteCategoryItem(category_label, item_label):
                 'category.showCategory',
                 category_label=category.label)), 404
 
+    if item.user_id != auth.getUserId(login_session['email']):
+        flash('Not authorized to delete %s - %s' % (
+            item.category.label, item.label))
+        return redirect(url_for(
+            'category.showCategoryItem', category_label=item.category.label
+            , item_label=item.label))
+
     if request.method == 'POST':
         nonce = request.form['nonce']
         if not isValidNonce(nonce):
@@ -412,9 +433,7 @@ def deleteCategoryItem(category_label, item_label):
         DBH.delete(item)
         DBH.commit()
         flash('Category item deleted')
-        return redirect(
-            url_for(
-                'category.showCategory',
-                category_label=category.label))
+        return redirect(url_for(
+                'category.showCategory', category_label=category.label))
 
     return render_template('deleteCategoryItem.html', item=item, nonce=generateNonce())
