@@ -2,8 +2,6 @@ import flask
 import random
 import string
 
-import sqlalchemy.exc
-import sqlalchemy.orm.exc
 
 from database_setup import Category
 from database_setup import Item
@@ -17,7 +15,9 @@ from flask import session as login_session
 from flask import url_for
 
 from sqlalchemy import asc, desc
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm.exc import NoResultFound
 
 
 DBSession = sessionmaker()
@@ -77,7 +77,7 @@ def createCategory():
         DBH.add(category)
         try:
             DBH.commit()
-        except sqlalchemy.exc.IntegrityError, err:
+        except IntegrityError, err:
             print err
             DBH.rollback()
             flash('Category exists')
@@ -97,7 +97,7 @@ def createCategory():
 def showCategory(category_label):
     try:
         category = DBH.query(Category).filter_by(label=category_label).one()
-    except sqlalchemy.orm.exc.NoResultFound:
+    except NoResultFound:
         return redirect(url_for('category.showCategoryMasterDetail')), 404
 
     categories = (
@@ -129,7 +129,7 @@ def updateCategory(category_label):
 
     try:
         category = DBH.query(Category).filter_by(label=category_label).one()
-    except sqlalchemy.orm.exc.NoResultFound:
+    except NoResultFound:
         return redirect(url_for('category.showCategoryMasterDetail')), 404
 
     if request.method == 'POST':
@@ -147,7 +147,7 @@ def updateCategory(category_label):
                     Category.label==updates.label, Category.id!=category.id)
                 .one()
             )
-        except sqlalchemy.orm.exc.NoResultFound:
+        except NoResultFound:
             # expect no duplicate records
             pass
         else:
@@ -175,7 +175,7 @@ def deleteCategory(category_label):
 
     try:
         category = DBH.query(Category).filter_by(label=category_label).one()
-    except sqlalchemy.orm.exc.NoResultFound:
+    except NoResultFound:
         return redirect(url_for('category.showCategoryMasterDetail')), 404
 
     if request.method == 'POST':
@@ -208,7 +208,7 @@ def createCategoryItem(category_label=None):
                 .filter_by(label=category_label)
                 .one()
                 )
-        except sqlalchemy.orm.exc.NoResultFound:
+        except NoResultFound:
             return redirect(url_for('category.showCategoryMasterDetail')), 404
 
     categories = DBH.query(Category).order_by(asc(Category.label)).all()
@@ -232,14 +232,14 @@ def createCategoryItem(category_label=None):
 
         try:
             category = DBH.query(Category).filter_by(id=item.category_id).one()
-        except sqlalchemy.orm.exc.NoResultFound:
+        except NoResultFound:
             return redirect(url_for('category.showCategoryMasterDetail')), 404
 
         DBH.add(item)
 
         try:
             DBH.commit()
-        except sqlalchemy.exc.IntegrityError:
+        except IntegrityError:
             DBH.rollback()
             flash('%s item label exists' % category.label)
             return render_template('createCategoryItem.html',
@@ -263,7 +263,7 @@ def createCategoryItem(category_label=None):
 def showCategoryItem(category_label, item_label):
     try:
         category = DBH.query(Category).filter_by(label=category_label).one()
-    except sqlalchemy.orm.exc.NoResultFound:
+    except NoResultFound:
         return redirect(url_for('category.showCategoryMasterDetail')), 404
 
     try:
@@ -272,7 +272,7 @@ def showCategoryItem(category_label, item_label):
             .filter_by(label=item_label, category_id=category.id)
             .one()
             )
-    except sqlalchemy.orm.exc.NoResultFound:
+    except NoResultFound:
         return redirect(
             url_for(
                 'category.showCategory',
@@ -294,7 +294,7 @@ def updateCategoryItem(category_label, item_label):
 
     try:
         category = DBH.query(Category).filter_by(label=category_label).one()
-    except sqlalchemy.orm.exc.NoResultFound:
+    except NoResultFound:
         return redirect(url_for('category.showCategoryMasterDetail')), 404
 
     try:
@@ -303,7 +303,7 @@ def updateCategoryItem(category_label, item_label):
             .filter_by(label=item_label, category_id=category.id)
             .one()
             )
-    except sqlalchemy.orm.exc.NoResultFound:
+    except NoResultFound:
         return redirect(
             url_for(
                 'category.showCategory',
@@ -328,7 +328,7 @@ def updateCategoryItem(category_label, item_label):
                 .filter_by(id=updates.category_id)
                 .one()
                 )
-        except sqlalchemy.orm.exc.NoResultFound:
+        except NoResultFound:
             return redirect(url_for('category.showCategoryMasterDetail')), 404
 
         try:
@@ -342,7 +342,7 @@ def updateCategoryItem(category_label, item_label):
                     )
                 .one()
             )
-        except sqlalchemy.orm.exc.NoResultFound:
+        except NoResultFound:
             # expect no duplicate records
             pass
         else:
@@ -376,7 +376,7 @@ def deleteCategoryItem(category_label, item_label):
 
     try:
         category = DBH.query(Category).filter_by(label=category_label).one()
-    except sqlalchemy.orm.exc.NoResultFound:
+    except NoResultFound:
         return redirect(url_for('category.showCategoryMasterDetail')), 404
 
     try:
@@ -385,7 +385,7 @@ def deleteCategoryItem(category_label, item_label):
             .filter_by(label=item_label, category_id=category.id)
             .one()
             )
-    except sqlalchemy.orm.exc.NoResultFound:
+    except NoResultFound:
         return redirect(
             url_for(
                 'category.showCategory',

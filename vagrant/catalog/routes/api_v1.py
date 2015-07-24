@@ -1,7 +1,5 @@
 import flask
 import json
-import sqlalchemy.exc
-import sqlalchemy.orm.exc
 
 from database_setup import Category
 from database_setup import Item
@@ -11,6 +9,7 @@ from flask import jsonify
 
 from sqlalchemy import asc, desc
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm.exc import NoResultFound
 
 
 DBSession = sessionmaker()
@@ -34,7 +33,7 @@ def api_v1_listCategoryJSON():
 def api_v1_showCategoryJSON(category_label):
     try:
         category = DBH.query(Category).filter_by(label=category_label).one()
-    except sqlalchemy.orm.exc.NoResultFound:
+    except NoResultFound:
         return abort(404)
 
     return jsonify(Category=category.serializeExpanded)
@@ -44,12 +43,12 @@ def api_v1_showCategoryJSON(category_label):
 def api_v1_showCategoryItemJSON(category_label, item_label):
     try:
         category = DBH.query(Category).filter_by(label=category_label).one()
-    except sqlalchemy.orm.exc.NoResultFound:
+    except NoResultFound:
         return abort(404)
 
     try:
         item = DBH.query(Item).filter_by(label=item_label, category_id=category.id).one()
-    except sqlalchemy.orm.exc.NoResultFound:
+    except NoResultFound:
         return abort(404)
 
     return jsonify(Item=item.serialize)
