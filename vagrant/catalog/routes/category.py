@@ -2,7 +2,6 @@ import flask
 import random
 import string
 
-
 from database_setup import Category
 from database_setup import Item
 
@@ -46,7 +45,7 @@ def showCategoryMasterDetail():
     categories = DBH.query(Category).order_by(asc(Category.label))
     items = DBH.query(Item).order_by(desc(Item.date)).limit(10)
 
-    if 'username' in login_session:
+    if 'name' in login_session:
         template_file = 'showCategoryMasterDetail.html'
     else:
         template_file = 'showPublicCategoryMasterDetail.html'
@@ -56,7 +55,7 @@ def showCategoryMasterDetail():
 
 @category.route('/category/create', methods=['GET', 'POST'])
 def createCategory():
-    if 'username' not in login_session:
+    if 'name' not in login_session:
         return redirect(url_for('auth.showLogin'))
 
     if request.method == 'POST':
@@ -112,7 +111,7 @@ def showCategory(category_label):
         .all()
         )
 
-    if 'username' in login_session:
+    if 'name' in login_session:
         template_file = 'showCategory.html'
     else:
         template_file = 'showPublicCategory.html'
@@ -124,13 +123,15 @@ def showCategory(category_label):
 @category.route('/category/<string:category_label>/update',
     methods=['GET', 'POST'])
 def updateCategory(category_label):
-    if 'username' not in login_session:
+    if 'name' not in login_session:
         return redirect(url_for('auth.showLogin'))
 
     try:
         category = DBH.query(Category).filter_by(label=category_label).one()
     except NoResultFound:
         return redirect(url_for('category.showCategoryMasterDetail')), 404
+
+    items = DBH.query(Item).filter_by(category_id=category.id).all()
 
     if request.method == 'POST':
         nonce = request.form['nonce']
@@ -154,7 +155,7 @@ def updateCategory(category_label):
             flash('Category label exists')
             return render_template(
                 'updateCategory.html', category=category,
-                categoryUpdates=updates, nonce=generateNonce())
+                categoryUpdates=updates, items=items, nonce=generateNonce())
 
         category.label = updates.label
         DBH.add(category)
@@ -164,13 +165,13 @@ def updateCategory(category_label):
             category_label=category.label))
 
     return render_template('updateCategory.html', category=category,
-        nonce=generateNonce())
+        items=items, nonce=generateNonce())
 
 
 @category.route('/category/<string:category_label>/delete',
     methods=['GET', 'POST'])
 def deleteCategory(category_label):
-    if 'username' not in login_session:
+    if 'name' not in login_session:
         return redirect(url_for('auth.showLogin'))
 
     try:
@@ -196,7 +197,7 @@ def deleteCategory(category_label):
 @category.route('/category/<string:category_label>/create',
     methods=['GET', 'POST'])
 def createCategoryItem(category_label=None):
-    if 'username' not in login_session:
+    if 'name' not in login_session:
         return redirect(url_for('auth.showLogin'))
 
     if category_label == None:
@@ -221,7 +222,8 @@ def createCategoryItem(category_label=None):
         item = Item(
             label = request.form['input-label'],
             description = request.form['input-description'],
-            category_id = request.form['input-category-id']
+            category_id = request.form['input-category-id'],
+            user_id = login_session['user_id']
             )
 
         if request.form['input-label'] == "":
@@ -278,7 +280,7 @@ def showCategoryItem(category_label, item_label):
                 'category.showCategory',
                 category_label=category.label)), 404
 
-    if 'username' in login_session:
+    if 'name' in login_session:
         template_file = 'showCategoryItem.html'
     else:
         template_file = 'showPublicCategoryItem.html'
@@ -289,7 +291,7 @@ def showCategoryItem(category_label, item_label):
 @category.route('/category/<string:category_label>/<string:item_label>/update',
     methods=['GET', 'POST'])
 def updateCategoryItem(category_label, item_label):
-    if 'username' not in login_session:
+    if 'name' not in login_session:
         return redirect(url_for('auth.showLogin'))
 
     try:
@@ -371,7 +373,7 @@ def updateCategoryItem(category_label, item_label):
 @category.route('/category/<string:category_label>/<string:item_label>/delete',
     methods=['GET', 'POST'])
 def deleteCategoryItem(category_label, item_label):
-    if 'username' not in login_session:
+    if 'name' not in login_session:
         return redirect(url_for('auth.showLogin'))
 
     try:

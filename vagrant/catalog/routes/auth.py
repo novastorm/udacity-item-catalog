@@ -6,13 +6,17 @@ import requests
 import string
 from flask import flash
 from flask import make_response
+from flask import redirect
 from flask import render_template
 from flask import request
 from flask import session as login_session
+from flask import url_for
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.exc import NoResultFound
+
+from database_setup import User
 
 
 CLIENT_ID = json.loads(
@@ -80,6 +84,7 @@ def gconnect():
         response.headers['Content-Type'] = 'application/json'
 
     # store access token in session
+    login_session['provider'] = 'google'
     login_session['access_token'] = access_token
     login_session['gplus_id'] = gplus_id
 
@@ -92,6 +97,11 @@ def gconnect():
     login_session['name'] = data['name']
     login_session['picture'] = data['picture']
     login_session['email'] = data['email']
+
+    user_id = getUserId(login_session['email'])
+    if user_id == None:
+        user_id = createUser(login_session)
+    login_session['user_id'] = user_id
 
     output = ''
     output += '<h1>Welcome, '
@@ -139,9 +149,31 @@ def gdisconnect():
         return response
 
 
+@auth.route('/disconnect')
+def disconnect():
+    if 'provider' in login_session:
+        if login_session['provider'] == 'google':
+            gdisconnect()
+            # del login_session['gplus_id']
+            # del login_session['access_token']
+
+            # del login_session['name']
+            # del login_session['email']
+            # del login_session['picture']
+            # del login_session['user_id']
+
+        del login_session['provider']
+
+        flash("You have successfully been logged out.")
+        return redirect(url_for('category.showCategoryMasterDetail'))
+    else:
+        flash("Not logged in")
+        return redirect(url_for('category.showCategoryMasterDetail'))
+
+
 def getUserId(email):
     try:
-        user = session.query(User).filter_by(email=email).one()
+        user = DBH.query(User).filter_by(email=email).one()
     except NoResultFound:
         return None
 
@@ -150,7 +182,7 @@ def getUserId(email):
 
 def getUserInformation(user_id):
     try:
-        user = session.query(User).filter_by(id=user_id).one()
+        user = DBH.query(User).filter_by(id=user_id).one()
     except NoResultFound:
         return None
 
@@ -159,11 +191,11 @@ def getUserInformation(user_id):
 
 def createUser(login_session):
     user = User(
-        name=login_session['username'],
+        name=login_session['name'],
         email=login_session['email'],
         picture=login_session['picture'])
 
-    session.add(user)
-    session.commit()
-    session.refresh(user)
+    DBH.add(user)
+    DBH.commit()
+    DBH.refresh(user)
     return user.id
