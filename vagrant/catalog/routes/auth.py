@@ -138,3 +138,32 @@ def gdisconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
 
+
+def getUserId(email):
+    try:
+        user = session.query(User).filter_by(email=email).one()
+    except NoResultFound:
+        return None
+
+    return user.id
+
+
+def getUserInformation(user_id):
+    try:
+        user = session.query(User).filter_by(id=user_id).one()
+    except NoResultFound:
+        return None
+
+    return user
+
+
+def createUser(login_session):
+    user = User(
+        name=login_session['username'],
+        email=login_session['email'],
+        picture=login_session['picture'])
+
+    session.add(user)
+    session.commit()
+    session.refresh(user)
+    return user.id
