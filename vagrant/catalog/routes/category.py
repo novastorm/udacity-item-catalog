@@ -179,6 +179,15 @@ def deleteCategory(category_label):
     except NoResultFound:
         return redirect(url_for('category.showCategoryMasterDetail')), 404
 
+    items = DBH.query(Item).filter_by(category_id=category.id).all()
+
+    if len(items) > 0:
+        flash('Category not empty')
+        return render_template(
+            'updateCategory.html', category=category, items=items,
+            nonce=generateNonce())
+
+
     if request.method == 'POST':
         nonce = request.form['nonce']
         if not isValidNonce(nonce):
