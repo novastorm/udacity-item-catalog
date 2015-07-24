@@ -1,4 +1,7 @@
 import flask
+import random
+import string
+
 import sqlalchemy.exc
 import sqlalchemy.orm.exc
 
@@ -23,6 +26,20 @@ DBH = DBSession()
 category = flask.Blueprint('category', __name__)
 
 
+def generateNonce(length=8):
+    if '_nonce' not in login_session:
+        login_session['_nonce'] = ''.join(random.choice(string.digits) for x in xrange(8))
+    return login_session['_nonce']
+
+
+def isValidNonce(nonce):
+    session_nonce = None
+    if '_nonce' in login_session:
+        session_nonce = login_session['_nonce']
+        del login_session['_nonce']
+    return session_nonce and (session_nonce == nonce)
+
+
 @category.route('/')
 @category.route('/category')
 def showCategoryMasterDetail():
@@ -43,9 +60,20 @@ def createCategory():
         return redirect(url_for('auth.showLogin'))
 
     if request.method == 'POST':
+        nonce = request.form['nonce']
+        if not isValidNonce(nonce):
+            abort(403)
+
         category = Category(
             label = request.form['input-label']
             )
+
+        if not category.label:
+            flash('Label required')
+            return render_template(
+                'createCategory.html', category=category,
+                nonce=generateNonce())
+
         DBH.add(category)
         try:
             DBH.commit()
@@ -53,14 +81,16 @@ def createCategory():
             print err
             DBH.rollback()
             flash('Category exists')
-            return render_template('createCategory.html', category=category)
+            return render_template(
+                'createCategory.html', category=category,
+                nonce=generateNonce())
 
         DBH.refresh(category)
         flash('Category created')
         return redirect(url_for('category.showCategory',
             category_label=category.label))
 
-    return render_template('createCategory.html')
+    return render_template('createCategory.html', nonce=generateNonce())
 
 
 @category.route('/category/<string:category_label>')
@@ -75,7 +105,12 @@ def showCategory(category_label):
         .order_by(asc(Category.label))
         .all()
         )
-    items = DBH.query(Item).filter_by(category_id=category.id).all()
+    items = (
+        DBH.query(Item)
+        .filter_by(category_id=category.id)
+        .order_by(asc(Item.label))
+        .all()
+        )
 
     if 'username' in login_session:
         template_file = 'showCategory.html'
@@ -98,6 +133,10 @@ def updateCategory(category_label):
         return redirect(url_for('category.showCategoryMasterDetail')), 404
 
     if request.method == 'POST':
+        nonce = request.form['nonce']
+        if not isValidNonce(nonce):
+            abort(403)
+
         updates = Category(label=request.form['input-label'])
 
         try:
@@ -115,7 +154,7 @@ def updateCategory(category_label):
             flash('Category label exists')
             return render_template(
                 'updateCategory.html', category=category,
-                categoryUpdates=updates)
+                categoryUpdates=updates, nonce=generateNonce())
 
         category.label = updates.label
         DBH.add(category)
@@ -124,7 +163,8 @@ def updateCategory(category_label):
         return redirect(url_for('category.showCategory',
             category_label=category.label))
 
-    return render_template('updateCategory.html', category=category)
+    return render_template('updateCategory.html', category=category,
+        nonce=generateNonce())
 
 
 @category.route('/category/<string:category_label>/delete',
@@ -139,12 +179,17 @@ def deleteCategory(category_label):
         return redirect(url_for('category.showCategoryMasterDetail')), 404
 
     if request.method == 'POST':
+        nonce = request.form['nonce']
+        if not isValidNonce(nonce):
+            abort(403)
+
         DBH.delete(category)
         DBH.commit()
         flash('Category deleted')
         return redirect(url_for('category.showCategoryMasterDetail'))
 
-    return render_template('deleteCategory.html', category=category)
+    return render_template(
+        'deleteCategory.html', category=category, nonce=generateNonce())
 
 
 @category.route('/category/create-item', methods=['GET', 'POST'])
@@ -169,6 +214,10 @@ def createCategoryItem(category_label=None):
     categories = DBH.query(Category).order_by(asc(Category.label)).all()
 
     if request.method == 'POST':
+        nonce = request.form['nonce']
+        if not isValidNonce(nonce):
+            abort(403)
+
         item = Item(
             label = request.form['input-label'],
             description = request.form['input-description'],
@@ -178,7 +227,8 @@ def createCategoryItem(category_label=None):
         if request.form['input-label'] == "":
             flash('Item label required')
             return render_template('createCategoryItem.html',
-                categories=categories, category=category, item=item)
+                categories=categories, category=category, item=item,
+                nonce=generateNonce())
 
         try:
             category = DBH.query(Category).filter_by(id=item.category_id).one()
@@ -193,7 +243,8 @@ def createCategoryItem(category_label=None):
             DBH.rollback()
             flash('%s item label exists' % category.label)
             return render_template('createCategoryItem.html',
-                categories=categories, category=category, item=item)
+                categories=categories, category=category, item=item,
+                nonce=generateNonce())
         except Exception, err:
             print Exception, err
             abort()
@@ -204,7 +255,8 @@ def createCategoryItem(category_label=None):
             category_label=category.label, item_label=item.label))
 
     return render_template(
-        'createCategoryItem.html', categories=categories, category=category)
+        'createCategoryItem.html', categories=categories, category=category,
+        nonce=generateNonce())
 
 
 @category.route('/category/<string:category_label>/<string:item_label>')
@@ -260,6 +312,10 @@ def updateCategoryItem(category_label, item_label):
     categories = DBH.query(Category).order_by(asc(Category.label)).all()
 
     if request.method =='POST':
+        nonce = request.form['nonce']
+        if not isValidNonce(nonce):
+            abort(403)
+
         updates = Item(
             label = request.form['input-label'],
             description = request.form['input-description'],
@@ -292,10 +348,8 @@ def updateCategoryItem(category_label, item_label):
         else:
             flash('%s item label exists' % updatedCategory.label)
             return render_template(
-                'updateCategoryItem.html',
-                categories=categories,
-                item=item,
-                itemUpdates=updates)
+                'updateCategoryItem.html', categories=categories, item=item,
+                itemUpdates=updates, nonce=generateNonce())
 
         item.label = updates.label
         item.description = updates.description
@@ -310,9 +364,8 @@ def updateCategoryItem(category_label, item_label):
             item_label=item.label))
 
     return render_template(
-        'updateCategoryItem.html',
-        categories=categories,
-        item=item)
+        'updateCategoryItem.html', categories=categories, item=item,
+        nonce=generateNonce())
 
 
 @category.route('/category/<string:category_label>/<string:item_label>/delete',
@@ -339,6 +392,10 @@ def deleteCategoryItem(category_label, item_label):
                 category_label=category.label)), 404
 
     if request.method == 'POST':
+        nonce = request.form['nonce']
+        if not isValidNonce(nonce):
+            abort(403)
+
         DBH.delete(item)
         DBH.commit()
         flash('Category item deleted')
@@ -347,4 +404,4 @@ def deleteCategoryItem(category_label, item_label):
                 'category.showCategory',
                 category_label=category.label))
 
-    return render_template('deleteCategoryItem.html', item=item)
+    return render_template('deleteCategoryItem.html', item=item, nonce=generateNonce())

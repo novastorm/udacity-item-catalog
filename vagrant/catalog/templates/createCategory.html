@@ -1,24 +1,25 @@
 {% extends "main.html" %}
 {% block content %}
 <h1>Create Category</h1>
+<div class="flash">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul>
+            {% for message in messages %}
+                <li><strong>{{ message }}</strong></li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+</div>
 <form action="{{ url_for('category.createCategory') }}" method="POST">
+    <input type="hidden" name="nonce" value="{{ nonce }}" />
     <div class="form-group">
-    <label for="input-label">Label:</label>
-    <div class="flash">
-{% with messages = get_flashed_messages() %}
-    {% if messages %}
-        <ul>
-        {% for message in messages %}
-            <li><strong>{{ message }}</strong></li>
-        {% endfor %}
-        </ul>
-    {% endif %}
-{% endwith %}
+        <label for="input-label">Label:</label>
+        <input name="input-label" type="text" class="form-control" maxlength="100" {% if category %}value="{{ category.label }}"{% endif %}>
     </div>
-    <input name="input-label" type="text" class="form-control" maxlength="100" {% if category %}value="{{ category.label }}"{% endif %}>
     <div class="padding-bottom"></div>
     <button type="submit" class="btn btn-default" id="submit" type="submit">Create</button>
     <a href="{{ url_for('category.showCategoryMasterDetail') }}"><div class="btn">Cancel</div></a>
-    </div>
 </form>
 {% endblock %}

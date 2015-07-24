@@ -13,6 +13,7 @@
 {% endwith %}
 </div>
 <form action="{{ url_for('category.updateCategoryItem', category_label=item.category.label, item_label=item.label) }}" method="POST">
+    <input type="hidden" name="nonce" value="{{ nonce }}" />
     <div class="form-group">
         <select name="input-category-id" class="form-control">
             {% for record in categories %}

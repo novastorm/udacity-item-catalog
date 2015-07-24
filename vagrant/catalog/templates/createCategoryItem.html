@@ -1,18 +1,19 @@
 {% extends "main.html" %}
 {% block content %}
 <h1>Create Item</h1>
-    <div class="flash">
-{% with messages = get_flashed_messages() %}
-    {% if messages %}
-        <ul>
-        {% for message in messages %}
-            <li><strong>{{ message }}</strong></li>
-        {% endfor %}
-        </ul>
-    {% endif %}
-{% endwith %}
-    </div>
+<div class="flash">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul>
+            {% for message in messages %}
+                <li><strong>{{ message }}</strong></li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+</div>
 <form action="{{ url_for('category.createCategoryItem') }}" method="POST">
+    <input type="hidden" name="nonce" value="{{ nonce }}" />
     <div class="form-group">
         <select name="input-category-id" class="form-control">
             <option value={{ categories[0].id }} selected>{{ categories[0].label }}</option>

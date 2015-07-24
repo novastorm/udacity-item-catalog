@@ -2,6 +2,7 @@
 {% block content %}
 <h1>Delete {{ category.label }}?</h1>
 <form action="{{ url_for('category.deleteCategory', category_label=category.label) }}" method="POST">
+    <input type="hidden" name="nonce" value="{{ nonce }}" />
     <input name="input-label" type="text" class="form-control" maxlength="100" {% if category %}value="{{ category.label }}"{% endif %}>
     <div class="padding-bottom"></div>
     <a href="{{ url_for('category.showCategory', category_label=category.label) }}"><div class="btn">Cancel</div></a>
