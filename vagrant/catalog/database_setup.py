@@ -24,6 +24,8 @@ class User(Base):
     name = Column(String(127), nullable=False)
     email = Column(String(127), nullable=False)
     picture = Column(String)
+    categories = relationship(
+        'Category', backref='user', order_by='Category.label')
     items = relationship('Item', backref='user', order_by='Item.label')
 
 
@@ -33,6 +35,7 @@ class Category(Base):
     id = Column(Integer, primary_key=True)
     label = Column(String(127), nullable=False, unique=True)
     items = relationship('Item', backref='category', order_by='Item.label')
+    user_id = Column(Integer, ForeignKey(User.id), nullable=False)
 
     @property
     def serialize(self):
@@ -59,6 +62,7 @@ class Item(Base):
     label = Column(String(127), nullable=False)
     date = Column(Date, default=func.now())
     description = Column(String)
+    image_url = Column(String)
 
     category_id = Column(Integer, ForeignKey(Category.id), nullable=False)
     # category = relationship(Category)

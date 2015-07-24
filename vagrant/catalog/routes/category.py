@@ -2,9 +2,6 @@ import flask
 import random
 import string
 
-from database_setup import Category
-from database_setup import Item
-
 from flask import abort
 from flask import flash
 from flask import redirect
@@ -18,6 +15,10 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.exc import NoResultFound
 
+from database_setup import Category
+from database_setup import Item
+
+from routes import auth
 
 DBSession = sessionmaker()
 DBH = DBSession()
@@ -64,7 +65,8 @@ def createCategory():
             abort(403)
 
         category = Category(
-            label = request.form['input-label']
+            label = request.form['input-label'],
+            user_id = login_session['user_id']
             )
 
         if not category.label:
