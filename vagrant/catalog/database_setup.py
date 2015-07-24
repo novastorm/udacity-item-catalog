@@ -17,6 +17,14 @@ DatabaseEngineURL = 'postgresql:///vagrant'
 
 Base = declarative_base()
 
+class User(Base):
+    __tablename__ = "%s%s" % (TablePrefix, 'User')
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(127), nullable=False)
+    email = Column(String(127), nullable=False)
+    picture = Column(String)
+
 class Category(Base):
     __tablename__ = '%s%s' % (TablePrefix, 'Category')
 
