@@ -1,5 +1,7 @@
 import sys
 
+import config as Config
+
 from sqlalchemy import create_engine
 from sqlalchemy import func
 from sqlalchemy import Column
@@ -12,8 +14,10 @@ from sqlalchemy import UniqueConstraint
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
-TablePrefix = 'ACT_'
-DatabaseEngineURL = 'postgresql:///vagrant'
+# TablePrefix = 'ACT_'
+# DatabaseEngineURL = 'postgresql:///vagrant'
+TablePrefix = Config.TablePrefix
+DatabaseEngineURL = Config.DatabaseEngineURL
 
 Base = declarative_base()
 

@@ -19,8 +19,9 @@ from sqlalchemy.orm.exc import NoResultFound
 from database_setup import User
 
 
+CLIENT_SECRETS_FILE = 'client_secrets.json'
 CLIENT_ID = json.loads(
-    open('client_secrets.json', 'r').read())['web']['client_id']
+    open(CLIENT_SECRETS_FILE, 'r').read())['web']['client_id']
 
 
 DBSession = sessionmaker()
@@ -134,6 +135,8 @@ def gdisconnect():
         # reset session
         del login_session['access_token']
         del login_session['gplus_id']
+
+        del login_session['user_id']
         del login_session['name']
         del login_session['email']
         del login_session['picture']
@@ -154,21 +157,14 @@ def disconnect():
     if 'provider' in login_session:
         if login_session['provider'] == 'google':
             gdisconnect()
-            # del login_session['gplus_id']
-            # del login_session['access_token']
-
-            # del login_session['name']
-            # del login_session['email']
-            # del login_session['picture']
-            # del login_session['user_id']
 
         del login_session['provider']
 
         flash("You have successfully been logged out.")
-        return redirect(url_for('category.showCategoryMasterDetail'))
     else:
         flash("Not logged in")
-        return redirect(url_for('category.showCategoryMasterDetail'))
+
+    return redirect(url_for('category.showCategoryMasterDetail'))
 
 
 def getUserId(email):
