@@ -3,6 +3,29 @@ body {
     padding-bottom: 20px;
 }
 
+.flash {
+    background-color: #98FB98;
+    width:100%;
+    text-decoration: none;
+
+}
+
+.flash li {
+    list-style-type: none;
+    text-align: center;
+
+}
+
+.category-item-layout .category-list {
+    border-right-style: solid;
+    border-right-width: 2px;
+    border-right-color: lightGray;
+}
+
 .category-item-layout .category-list .item {
+    color: red;
+}
+
+.category-item-layout .item-list .item {
     color: red;
 }

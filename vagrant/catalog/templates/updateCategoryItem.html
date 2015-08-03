@@ -1,6 +1,5 @@
 {% extends "main.html" %}
 {% block content %}
-<h1>{{ item.category.label }} - {{ item.label }} <small>Update Item</small></h1>
 <div class="flash">
 {% with messages = get_flashed_messages() %}
     {% if messages %}
@@ -12,6 +11,7 @@
     {% endif %}
 {% endwith %}
 </div>
+<h1>{{ item.category.label }} - {{ item.label }} <small>Update Item</small></h1>
 <form action="{{ url_for('category.updateCategoryItem', category_label=item.category.label, item_label=item.label) }}" method="POST">
     <input type="hidden" name="nonce" value="{{ nonce }}" />
     <div class="form-group">

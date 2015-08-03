@@ -1,6 +1,5 @@
 {% extends "main.html" %}
 {% block content %}
-<h1>{{ category.label }} <small>Update Category</small></h1>
 <div class="flash">
 {% with messages = get_flashed_messages() %}
     {% if messages %}
@@ -12,6 +11,7 @@
     {% endif %}
 {% endwith %}
 </div>
+<h1>{{ category.label }} <small>Update Category</small></h1>
 <form action="{{ url_for('category.updateCategory', category_label=category.label) }}" method="POST">
     <input type="hidden" name="nonce" value="{{ nonce }}" />
     <div class="form-group">

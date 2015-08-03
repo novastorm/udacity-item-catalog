@@ -16,14 +16,16 @@
 <div class="row category-item-layout">
     <div class="row">
         <div class="col-md-3 category-list">
-            <h3>Categories</h3>
-            {% for record in categories %}
-            <div class="element">
-                <h4><a href="/category/{{ record.label }}"><span class="item">{{ record.label }}</span></a></h4>
+            <h3><span class="title">Categories</span></h3>
+            <div class="list">
+                {% for record in categories %}
+                <div class="element">
+                    <h4><a href="/category/{{ record.label }}"><span class="item">{{ record.label }}</span></a></h4>
+                </div>
+                {% endfor %}
             </div>
-            {% endfor %}
         </div>
-        <div class="col-md-9">
+        <div class="col-md-9 item-list">
             {% block itemContent %}
             {% endblock %}
         </div>

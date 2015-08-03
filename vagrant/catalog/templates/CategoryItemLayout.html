@@ -16,19 +16,21 @@
 <div class="category-item-layout">
     <div class="row">
         <div class="col-md-3 category-list">
-            <h3>Categories <small><a href="/category/create"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></small></h3>
+            <h3><span class="title">Categories</span> <small><a href="/category/create"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></small></h3>
 
-            {% for record in categories %}
-            <div class="element">
-                <h4><a href="/category/{{ record.label }}"><span class="item">{{ record.label }}</span></a>
-                {% if record.user_id == getUserId(session['email']) %}
-                    <small>
-                        <a href="/category/{{ record.label }}/update" class="update"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
-                    </small>
-                {% endif %}
-                </h4>
+            <div class="list">
+                {% for record in categories %}
+                <div class="element">
+                    <h4><a href="/category/{{ record.label }}"><span class="item">{{ record.label }}</span></a>
+                    {% if record.user_id == getUserId(session['email']) %}
+                        <small>
+                            <a href="/category/{{ record.label }}/update" class="update"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
+                        </small>
+                    {% endif %}
+                    </h4>
+                </div>
+                {% endfor %}
             </div>
-            {% endfor %}
         </div>
         <div class="col-md-9 item-list">
             {% block itemContent %}
