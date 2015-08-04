@@ -35,11 +35,13 @@
         <textarea name="input-description" class="form-control"></textarea>
     </div>
     <div class="padding-bottom"></div>
-    <a href="{% if category.id %}
-            {{ url_for('category.showCategory', category_label=category.label) }}
-        {% else %}
-            {{ url_for('category.showCategoryMasterDetail') }}
-        {% endif %}"><div class="btn btn-default">Cancel</div></a>
-    <button type="submit" class="btn btn-primary" id="submit" type="submit">Create</button>
+    <span class="pull-right">
+        <a href="{% if category.id %}
+                {{ url_for('category.showCategory', category_label=category.label) }}
+            {% else %}
+                {{ url_for('category.showCategoryMasterDetail') }}
+            {% endif %}"><div class="btn btn-default">Cancel</div></a>
+        <button type="submit" class="btn btn-primary" id="submit" type="submit">Create</button>
+    </span>
 </form>
 {% endblock %}
