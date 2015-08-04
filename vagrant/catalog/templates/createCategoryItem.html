@@ -27,11 +27,19 @@
         <input name="input-label" type="text" class="form-control" maxlength="100" {% if item %}value="{{ item.label }}"{% endif %}>
     </div>
     <div class="form-group">
+        <label for="input-image-url">Image URL:</label>
+        <input name="input-image-url" type="text" class="form-control" maxlength="100" {% if item %}value="{{ item.image_url }}"{% endif %}>
+    </div>
+    <div class="form-group">
         <label for="input-description">Description:</label>
         <textarea name="input-description" class="form-control"></textarea>
     </div>
     <div class="padding-bottom"></div>
-    <a href="{{ url_for('category.showCategory', category_label=category.label) }}"><div class="btn btn-default">Cancel</div></a>
+    <a href="{% if category.id %}
+            {{ url_for('category.showCategory', category_label=category.label) }}
+        {% else %}
+            {{ url_for('category.showCategoryMasterDetail') }}
+        {% endif %}"><div class="btn btn-default">Cancel</div></a>
     <button type="submit" class="btn btn-primary" id="submit" type="submit">Create</button>
 </form>
 {% endblock %}
