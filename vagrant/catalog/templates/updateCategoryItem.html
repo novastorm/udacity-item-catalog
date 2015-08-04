@@ -27,7 +27,7 @@
     </div>
     <div class="form-group">
         <label for="input-image-url">Image URL:</label>
-        <input name="input-image-url" type="text" class="form-control" maxlength="100" value="{{ itemUpdates.image_url if itemUpdates else item.image_url }}">
+        <input name="input-image-url" type="text" class="form-control" maxlength="100" value="{{ (itemUpdates.image_url or '') if itemUpdates else (item.image_url or '') }}">
     </div>
     <div class="form-group">
         <label for="input-description">Description:</label>
