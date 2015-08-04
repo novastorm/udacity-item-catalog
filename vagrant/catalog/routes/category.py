@@ -239,6 +239,7 @@ def createCategoryItem(category_label=None):
 
         item = Item(
             label = request.form['input-label'],
+            image_url = request.form['input-image-url'],
             description = request.form['input-description'],
             category_id = request.form['input-category-id'],
             user_id = login_session['user_id']
@@ -345,6 +346,7 @@ def updateCategoryItem(category_label, item_label):
 
         updates = Item(
             label = request.form['input-label'],
+            image_url = request.form['input-image-url'],
             description = request.form['input-description'],
             category_id = request.form['input-category-id']
             )
@@ -379,6 +381,7 @@ def updateCategoryItem(category_label, item_label):
                 itemUpdates=updates, nonce=generateNonce())
 
         item.label = updates.label
+        item.image_url = updates.image_url
         item.description = updates.description
         item.category_id = updates.category_id
         DBH.add(item)

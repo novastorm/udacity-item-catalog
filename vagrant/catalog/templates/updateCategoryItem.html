@@ -26,6 +26,10 @@
         <input name="input-label" type="text" class="form-control" maxlength="100" value="{{ itemUpdates.label if itemUpdates else item.label }}">
     </div>
     <div class="form-group">
+        <label for="input-image-url">Image URL:</label>
+        <input name="input-image-url" type="text" class="form-control" maxlength="100" value="{{ itemUpdates.image_url if itemUpdates else item.image_url }}">
+    </div>
+    <div class="form-group">
         <label for="input-description">Description:</label>
         <textarea name="input-description" class="form-control">{{ item.description or '' }}</textarea>
     </div>

@@ -12,7 +12,10 @@
     {% endif %}
 {% endwith %}
 </div>
-<div>{{ item.description }}</div>
+<div>
+    <img src="{{ item.image_url }}" class="item-image img-rounded">
+    <p class="item-description">{{ item.description }}</p>
+</div>
 {% if item.user_id == getUserId(session['email']) %}
 <a href="{{ url_for('category.updateCategoryItem', category_label=item.category.label, item_label=item.label) }}"><div class="btn">Edit</div></a>|<a href="{{ url_for('category.deleteCategoryItem', category_label=item.category.label, item_label=item.label) }}"><div class="btn">Delete</div></a>
 {% endif %}

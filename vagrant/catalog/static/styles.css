@@ -29,3 +29,14 @@ body {
 .category-item-layout .item-list .item {
     color: red;
 }
+
+img.item-image {
+    max-height: 150px;
+    max-width:150px;
+    margin: 10px;
+    float: left;
+}
+
+.item-description {
+    white-space: pre-wrap;
+}
