@@ -33,4 +33,4 @@ Change to the project directory and run the test suite
 
 The default running project can be accessed via the local web browser at:
 
-    //localhost:5000
+    localhost:5000
