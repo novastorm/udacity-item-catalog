@@ -83,6 +83,7 @@ class Item(Base):
                   'label': self.label,
                    'date': str(self.date),
             'description': self.description,
+              'image_url': self.image_url,
             'category_id': self.category_id
         }
 
