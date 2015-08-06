@@ -1,0 +1,10 @@
+{% extends "CategoryItemLayout.html" %}
+{% block itemContent %}
+<h3>{{ category.label }} Items <small><a href="/category/{{ category.label }}/create"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></small></h3>
+
+{% for record in items %}
+<div class="element">
+  <h4><a href="/category/{{ record.category.label }}/{{ record.label }}"><span class="item">{{ record.label }}</span></a>
+</div>
+{% endfor %}
+{% endblock %}

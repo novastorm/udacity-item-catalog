@@ -1,0 +1,42 @@
+{% extends "main.html" %}
+{% block content %}
+<div class="flash">
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <ul>
+        {% for message in messages %}
+            <li><strong>{{ message }}</strong></li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+{% endwith %}
+</div>
+<h1>{{ item.category.label }} - {{ item.label }} <small>Update Item</small></h1>
+<form action="{{ url_for('category.updateCategoryItem', category_label=item.category.label, item_label=item.label) }}" method="POST">
+    <input type="hidden" name="nonce" value="{{ nonce }}" />
+    <div class="form-group">
+        <select name="input-category-id" class="form-control">
+            {% for record in categories %}
+                <option value="{{ record.id }}"{% if (itemUpdates and record.id == itemUpdates.category.id) or (not itemUpdates and record.id == item.category.id) %} selected{% endif %}>{{ record.label }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="input-label">Label:</label>
+        <input name="input-label" type="text" class="form-control" maxlength="100" value="{{ itemUpdates.label if itemUpdates else item.label }}">
+    </div>
+    <div class="form-group">
+        <label for="input-image-url">Image URL:</label>
+        <input name="input-image-url" type="text" class="form-control" maxlength="100" value="{{ (itemUpdates.image_url or '') if itemUpdates else (item.image_url or '') }}">
+    </div>
+    <div class="form-group">
+        <label for="input-description">Description:</label>
+        <textarea name="input-description" class="form-control">{{ item.description or '' }}</textarea>
+    </div>
+    <div class="padding-bottom"></div>
+    <span class="pull-right">
+        <a href="{{ url_for('category.showCategoryItem', category_label=item.category.label, item_label=item.label) }}"><div class="btn btn-default">Cancel</div></a>
+        <button type="submit" class="btn btn-primary" id="submit" type="submit">Update</button>
+    </span>
+</form>
+{% endblock %}

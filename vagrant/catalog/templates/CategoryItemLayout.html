@@ -1,0 +1,41 @@
+{% extends "main.html" %}
+{% block content %}
+<div class="row">
+    <div class="flash">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul>
+                {% for message in messages %}
+                    <li><strong>{{ message }}</strong></li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+    </div>
+</div>
+<div class="category-item-layout">
+    <div class="row">
+        <div class="col-md-3 category-list">
+            <h3><span class="title">Categories</span> <small><a href="/category/create"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></small></h3>
+
+            <div class="list">
+                {% for record in categories %}
+                <div class="element">
+                    <h4><a href="/category/{{ record.label }}"><span class="item">{{ record.label }}</span></a>
+                    {% if record.user_id == getUserId(session['email']) %}
+                        <small>
+                            <a href="/category/{{ record.label }}/update" class="update"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
+                        </small>
+                    {% endif %}
+                    </h4>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-md-9 item-list">
+            {% block itemContent %}
+            {% endblock %}
+        </div>
+    </div>
+</div>
+{% endblock %}

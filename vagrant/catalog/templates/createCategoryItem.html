@@ -1,0 +1,47 @@
+{% extends "main.html" %}
+{% block content %}
+<h1>Create Item</h1>
+<div class="flash">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul>
+            {% for message in messages %}
+                <li><strong>{{ message }}</strong></li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+</div>
+<form action="{{ url_for('category.createCategoryItem') }}" method="POST">
+    <input type="hidden" name="nonce" value="{{ nonce }}" />
+    <div class="form-group">
+        <select name="input-category-id" class="form-control">
+            <option value={{ categories[0].id }} selected>{{ categories[0].label }}</option>
+            {% for record in categories[1:] %}
+                <option value={{ record.id }}>{{ record.label }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="input-label">Label:</label>
+        <input name="input-label" type="text" class="form-control" maxlength="100" {% if item %}value="{{ item.label }}"{% endif %}>
+    </div>
+    <div class="form-group">
+        <label for="input-image-url">Image URL:</label>
+        <input name="input-image-url" type="text" class="form-control" maxlength="100" {% if item %}value="{{ item.image_url }}"{% endif %}>
+    </div>
+    <div class="form-group">
+        <label for="input-description">Description:</label>
+        <textarea name="input-description" class="form-control"></textarea>
+    </div>
+    <div class="padding-bottom"></div>
+    <span class="pull-right">
+        <a href="{% if category.id %}
+                {{ url_for('category.showCategory', category_label=category.label) }}
+            {% else %}
+                {{ url_for('category.showCategoryMasterDetail') }}
+            {% endif %}"><div class="btn btn-default">Cancel</div></a>
+        <button type="submit" class="btn btn-primary" id="submit" type="submit">Create</button>
+    </span>
+</form>
+{% endblock %}

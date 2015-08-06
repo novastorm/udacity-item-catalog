@@ -1,0 +1,32 @@
+{% extends "main.html" %}
+{% block content %}
+<div class="flash">
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <ul>
+        {% for message in messages %}
+            <li><strong>{{ message }}</strong></li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+{% endwith %}
+</div>
+<h1>{{ category.label }} <small>Update Category</small></h1>
+<form action="{{ url_for('category.updateCategory', category_label=category.label) }}" method="POST">
+    <input type="hidden" name="nonce" value="{{ nonce }}" />
+    <div class="form-group">
+        <label for="input-label">Label:</label>
+        <input name="input-label" type="text" class="form-control" maxlength="100" value="{{ categoryUpdates.label if categoryUpdates else category.label }}">
+    </div>
+    <div class="padding-bottom"></div>
+    <div>
+    {% if items|count < 1 %}
+        <a href="{{ url_for('category.deleteCategory', category_label=category.label) }}"><div class="btn btn-danger">Delete</div></a>
+    {% endif %}
+        <span class="pull-right">
+            <a href="{{ url_for('category.showCategory', category_label=category.label) }}"><div class="btn btn-default">Cancel</div></a>
+            <button type="submit" class="btn btn-primary" id="submit" type="submit">Update</button>
+        </span>
+    </div>
+</form>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends "main.html" %}
+{% block content %}
+<div class="row">
+    <div class="flash">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul>
+                {% for message in messages %}
+                    <li><strong>{{ message }}</strong></li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+    </div>
+</div>
+<div class="row category-item-layout">
+    <div class="row">
+        <div class="col-md-3 category-list">
+            <h3><span class="title">Categories</span></h3>
+            <div class="list">
+                {% for record in categories %}
+                <div class="element">
+                    <h4><a href="/category/{{ record.label }}"><span class="item">{{ record.label }}</span></a></h4>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-md-9 item-list">
+            {% block itemContent %}
+            {% endblock %}
+        </div>
+    </div>
+</div>
+{% endblock %}
