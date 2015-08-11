@@ -22,6 +22,7 @@ DatabaseEngineURL = Config.DatabaseEngineURL
 Base = declarative_base()
 
 class User(Base):
+    """Table of users and user information"""
     __tablename__ = "%s%s" % (TablePrefix, 'User')
 
     id = Column(Integer, primary_key=True)
@@ -34,6 +35,7 @@ class User(Base):
 
 
 class Category(Base):
+    """Table of categories and associated information"""
     __tablename__ = '%s%s' % (TablePrefix, 'Category')
 
     id = Column(Integer, primary_key=True)
@@ -61,6 +63,7 @@ class Category(Base):
 
 
 class Item(Base):
+    """Table of category items and associated information"""
     __tablename__ = '%s%s' % (TablePrefix,'Item')
 
     id = Column(Integer, primary_key=True)

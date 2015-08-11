@@ -15,6 +15,14 @@ measures to address CSRF.
 * VirtualBox https://www.virtualbox.org
 * this repo
 
+## Software version requirements
+
+* Flask == 0.10.1
+* SQLAlchemy == 0.8.4
+* bleach == 1.4.1
+* oauth2client == 1.4.11
+* requests == 2.2.1
+* httplib2 == 0.9.1
 
 ## Running the Demo
 
@@ -34,3 +42,7 @@ Change to the project directory and run the test suite
 The default running project can be accessed via the local web browser at:
 
     localhost:5000
+
+## Reference
+
+* [vagrant/catalog/API](API.md)
