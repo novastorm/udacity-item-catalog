@@ -1,3 +1,9 @@
+"""ATOM feed feature
+
+Generates ATOM feed of recent items entered into the application
+"""
+
+
 import flask
 
 from database_setup import Item
@@ -9,8 +15,8 @@ from urlparse import urljoin
 from werkzeug.contrib.atom import AtomFeed
 
 
-DBSession = sessionmaker()
-DBH = DBSession()
+_DBSession = sessionmaker()
+_DBH = _DBSession()
 
 feed = flask.Blueprint('feed', __name__)
 
@@ -19,8 +25,13 @@ def make_external(url):
 
 @feed.route('/recent.atom')
 def recent_feed():
+    """Generate ATOM feed.
+
+    Generate ATOM feed containing the item label, description, date, and a URL
+    link to the item
+    """
     feed = AtomFeed('Item Catalog', feed_url=request.url, url=request.url_root)
-    items = DBH.query(Item).order_by(desc(Item.date)).limit(15).all()
+    items = _DBH.query(Item).order_by(desc(Item.date)).limit(15).all()
 
     for item in items:
         feed.add(

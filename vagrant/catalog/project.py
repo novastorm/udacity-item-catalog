@@ -1,3 +1,12 @@
+""" Catalog of Items
+
+This application provides a list of items within a variety of categories and
+integrates third party user registration and authentication.
+
+This product demonstrates a CRUD web application, OAuth integration, and security
+measures to address CSRF.
+"""
+
 from flask import Flask
 
 from sqlalchemy import create_engine
@@ -8,10 +17,11 @@ from database_setup import DatabaseEngineURL
 from database_setup import Base
 from database_setup import User
 
-from routes.api_v1 import api_v1
-from routes.auth import auth
-from routes.category import category
-from routes.feed import feed
+from routes import auth
+from routes.api_v1 import api_v1 as _api_v1_blueprint
+from routes.auth import auth as _auth_blueprint
+from routes.category import category as _category_blueprint
+from routes.feed import feed as _feed_blueprint
 
 APPLICATION_NAME = "Item Catalog"
 
@@ -22,33 +32,18 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 DBH = DBSession()
 
-app.register_blueprint(auth)
-app.register_blueprint(category)
-app.register_blueprint(api_v1, url_prefix='/api/v1')
-app.register_blueprint(feed, url_prefix='/feed')
+app.register_blueprint(_auth_blueprint)
+app.register_blueprint(_category_blueprint)
+app.register_blueprint(_api_v1_blueprint, url_prefix='/api/v1')
+app.register_blueprint(_feed_blueprint, url_prefix='/feed')
 
 
 @app.context_processor
 def utility_processor():
-    def getUserId(email):
-        try:
-            user = DBH.query(User).filter_by(email=email).one()
-        except NoResultFound:
-            return None
-
-        return user.id
-
-
-    def getUserInformation(user_id):
-        try:
-            user = DBH.query(User).filter_by(id=user_id).one()
-        except NoResultFound:
-            return None
-
-        return user
-
+    """Provides addtional utility functions for use within templates."""
     return dict(
-        getUserId=getUserId, getUserInformation=getUserInformation)
+        getUserId=auth.getUserId,
+        getUserInformation=auth.getUserInformation)
 
 
 if __name__ == '__main__':

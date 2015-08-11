@@ -1,3 +1,10 @@
+"""Third-party authentication feature
+
+Implements third-party authentication and authorization via Google OAuth
+system.
+"""
+
+
 import flask
 import httplib2
 import json
@@ -24,8 +31,9 @@ CLIENT_ID = json.loads(
     open(CLIENT_SECRETS_FILE, 'r').read())['web']['client_id']
 
 
-DBSession = sessionmaker()
-DBH = DBSession()
+# get database session
+_DBSession = sessionmaker()
+_DBH = _DBSession()
 
 auth = flask.Blueprint('auth', __name__)
 
@@ -36,6 +44,7 @@ def make_external(url):
 
 @auth.route('/login')
 def showLogin():
+    """Login to the system"""
     state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in xrange(32))
     login_session['state'] = state
     return render_template('login.html', STATE=state)
@@ -43,6 +52,7 @@ def showLogin():
 
 @auth.route('/gconnect', methods=['POST'])
 def gconnect():
+    """Authenticate using google OAuth system"""
     if request.args.get('state') != login_session['state']:
         response = make_response(json.dumps('Invalid state parameter'), 401)
         response.headers['Content-Type'] = 'application/json'
@@ -119,6 +129,7 @@ def gconnect():
 # Disconnect user
 @auth.route("/gdisconnect")
 def gdisconnect():
+    """Disconnect from google authenication."""
     # only disconnet a connected user
     access_token = login_session.get('access_token')
     # check if connected user
@@ -154,6 +165,7 @@ def gdisconnect():
 
 @auth.route('/disconnect')
 def disconnect():
+    """Logout of the system."""
     if 'provider' in login_session:
         if login_session['provider'] == 'google':
             gdisconnect()
@@ -169,7 +181,7 @@ def disconnect():
 
 def getUserId(email):
     try:
-        user = DBH.query(User).filter_by(email=email).one()
+        user = _DBH.query(User).filter_by(email=email).one()
     except NoResultFound:
         return None
 
@@ -178,7 +190,7 @@ def getUserId(email):
 
 def getUserInformation(user_id):
     try:
-        user = DBH.query(User).filter_by(id=user_id).one()
+        user = _DBH.query(User).filter_by(id=user_id).one()
     except NoResultFound:
         return None
 
@@ -191,7 +203,7 @@ def createUser(login_session):
         email=login_session['email'],
         picture=login_session['picture'])
 
-    DBH.add(user)
-    DBH.commit()
-    DBH.refresh(user)
+    _DBH.add(user)
+    _DBH.commit()
+    _DBH.refresh(user)
     return user.id
