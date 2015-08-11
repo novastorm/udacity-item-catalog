@@ -45,4 +45,4 @@ The default running project can be accessed via the local web browser at:
 
 ## Reference
 
-* [vagrant/catalog/API](API.md)
+* [API](vagrant/catalog/API.md)
